@@ -9,16 +9,14 @@ import heroImage from "./assets/hero.png";
 
 function App() {
     const [currentRoute, setCurrentRoute] = useState("home");
-    const [displayRoute, setDisplayRoute] = useState("home");
     const overlayRef = useRef<HTMLDivElement>(null);
 
     const handleNavigate = (route: string) => {
-        if (route === displayRoute) return;
+        if (route === currentRoute) return;
 
         // Visual transition timeline
         const tl = gsap.timeline({
             onComplete: () => {
-                setDisplayRoute(route);
                 setCurrentRoute(route);
                 window.scrollTo({ top: 0, behavior: "instant" });
 
@@ -40,7 +38,7 @@ function App() {
     };
 
     const renderRoute = () => {
-        switch (displayRoute) {
+        switch (currentRoute) {
             case "home":
                 return <Home onNavigate={handleNavigate} />;
             case "product":
