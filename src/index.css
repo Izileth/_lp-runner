@@ -3,14 +3,17 @@
 @theme {
   --font-sans: "Plus Jakarta Sans", sans-serif;
   --font-display: "Outfit", sans-serif;
-  --color-primary: #8b5cf6;
-  --color-secondary: #ec4899;
-  --color-dark: #030014;
+  --color-ivory: #F5F2EC;
+  --color-black-main: #111111;
+  --color-gray-sec: #8B8B8B;
+  --color-border-main: #DDD7CF;
+  --color-card-bg: #F8F6F2;
 }
 
 @layer base {
   body {
-    @apply bg-dark text-slate-100 overflow-x-hidden antialiased;
+    @apply bg-ivory text-black-main overflow-x-hidden antialiased;
     font-family: var(--font-sans);
   }
 }
+
