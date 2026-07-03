@@ -1,5 +1,6 @@
 import { useEffect, useRef } from "react";
 import gsap from "gsap";
+import Navbar from "../components/Navbar";
 
 interface ContactProps {
     onNavigate: (route: string) => void;
@@ -53,50 +54,7 @@ export default function Contact({ onNavigate }: ContactProps) {
 
     return (
         <div ref={containerRef} className="relative w-full min-h-screen bg-ivory text-black-main overflow-x-hidden font-sans">
-            {/* ---------- NAVBAR ---------- */}
-            <header className="relative z-20 flex items-center justify-between px-6 sm:px-10 lg:px-14 py-6 sm:py-8">
-                <button
-                    onClick={() => onNavigate("home")}
-                    className="flex items-center gap-[1px] text-lg sm:text-xl font-extrabold tracking-tight text-black-main select-none cursor-pointer"
-                    aria-label="Runner home"
-                >
-                    <span className="inline-block scale-x-[-1]">R</span>
-                    <span>unner</span>
-                </button>
-
-                <nav className="hidden md:flex items-center gap-8 text-[11px] font-semibold tracking-widest uppercase text-black-main">
-                    <button onClick={() => onNavigate("product")} className="hover:opacity-60 transition-opacity cursor-pointer">
-                        Shop
-                    </button>
-                    <span className="text-border-main">/</span>
-                    <button onClick={() => onNavigate("fins")} className="hover:opacity-60 transition-opacity cursor-pointer">
-                        Fins
-                    </button>
-                    <button onClick={() => onNavigate("about")} className="hover:opacity-60 transition-opacity cursor-pointer">
-                        About
-                    </button>
-                    <button onClick={() => onNavigate("contact")} className="hover:opacity-60 transition-opacity cursor-pointer">
-                        Contact
-                    </button>
-                </nav>
-
-                <div className="flex items-center gap-3 sm:gap-4">
-                    <span className="hidden sm:inline text-[11px] font-semibold tracking-widest uppercase text-black-main">
-                        Account
-                    </span>
-                    <button 
-                        onClick={() => onNavigate("product")}
-                        className="flex items-center gap-2 border border-border-main rounded-full pl-4 pr-1.5 py-1.5 cursor-pointer bg-card-bg hover:bg-black-main hover:text-white transition-all duration-300"
-                    >
-                        <span className="text-[11px] font-semibold tracking-widest uppercase whitespace-nowrap">
-                            Bag &middot; $0
-                        </span>
-                        <span className="flex items-center justify-center w-5 h-5 rounded-full bg-black-main text-white text-[10px] font-bold">
-                            0
-                        </span>
-                    </button>
-                </div>
-            </header>
+            <Navbar onNavigate={onNavigate} currentRoute="contact" />
 
             {/* ---------- MAIN SECTION ---------- */}
             <main className="relative max-w-5xl mx-auto px-6 pt-10 pb-20">
