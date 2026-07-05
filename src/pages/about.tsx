@@ -1,74 +1,64 @@
-import { useEffect, useRef } from "react";
-import gsap from "gsap";
-import Navbar from "../components/Navbar";
+import React, { useRef, useMemo } from "react";
+import type { Route } from "../types";
+import { useFloatingPills } from "../hooks/useFloatingPills";
+import { usePageEntrance } from "../hooks/usePageEntrance";
+import PageLayout from "../components/templates/PageLayout";
+import FloatingPill from "../components/atoms/FloatingPill";
 
 interface AboutProps {
-    onNavigate: (route: string) => void;
+    onNavigate: (route: Route) => void;
 }
 
-export default function About({ onNavigate }: AboutProps) {
+export const About: React.FC<AboutProps> = ({ onNavigate }) => {
     const containerRef = useRef<HTMLDivElement>(null);
-    const titleRef = useRef<HTMLHeadingElement>(null);
 
-    useEffect(() => {
-        const ctx = gsap.context(() => {
-            gsap.fromTo(
-                titleRef.current,
-                { y: 60, opacity: 0 },
-                { y: 0, opacity: 1, duration: 1.0, ease: "power4.out" }
-            );
+    // Apply floating animations to pills
+    useFloatingPills(containerRef);
 
-            gsap.fromTo(
-                ".about-content",
-                { opacity: 0, y: 30 },
-                { opacity: 1, y: 0, duration: 0.8, delay: 0.3, ease: "power3.out" }
-            );
-
-            gsap.fromTo(
-                ".grid-item",
-                { opacity: 0, y: 40 },
-                {
+    // Entrance GSAP animation config
+    const entranceAnimations = useMemo(
+        () => [
+            {
+                selector: ".about-title",
+                from: { y: 40, opacity: 0 },
+                to: { y: 0, opacity: 1, duration: 1.0, ease: "power4.out" },
+            },
+            {
+                selector: ".about-content",
+                from: { opacity: 0, y: 30 },
+                to: { opacity: 1, y: 0, duration: 0.8, delay: 0.3, ease: "power3.out" },
+            },
+            {
+                selector: ".grid-item",
+                from: { opacity: 0, y: 40 },
+                to: {
                     opacity: 1,
                     y: 0,
                     duration: 0.8,
                     stagger: 0.15,
                     delay: 0.5,
-                    ease: "power3.out"
-                }
-            );
+                    ease: "power3.out",
+                },
+            },
+        ],
+        []
+    );
 
-            // Floating pills
-            gsap.to(".floating-pill", {
-                y: "random(-10, 10)",
-                x: "random(-8, 8)",
-                rotation: "random(-5, 5)",
-                duration: "random(4, 6)",
-                repeat: -1,
-                yoyo: true,
-                ease: "sine.inOut"
-            });
-        }, containerRef);
-
-        return () => ctx.revert();
-    }, []);
+    usePageEntrance(containerRef, entranceAnimations);
 
     return (
-        <div ref={containerRef} className="relative w-full min-h-screen bg-ivory text-black-main overflow-x-hidden font-sans">
-            <Navbar onNavigate={onNavigate} currentRoute="about" />
-
-            {/* ---------- HERO SECTION ---------- */}
-            <main className="relative max-w-5xl mx-auto px-6 pt-10 pb-20">
+        <PageLayout onNavigate={onNavigate} currentRoute="about" showFooterLinks={true}>
+            <main ref={containerRef} className="relative max-w-5xl mx-auto px-6 pt-10 pb-20">
                 {/* Decorative floating elements */}
-                <span className="floating-pill pointer-events-none absolute left-[5%] top-[15%] w-10 h-6 rounded-full bg-card-bg border border-border-main opacity-85 rotate-[-10deg] blur-[0.5px]" />
-                <span className="floating-pill pointer-events-none absolute right-[5%] top-[20%] w-12 h-7 rounded-full bg-card-bg border border-border-main opacity-70 rotate-[20deg] blur-[1px]" />
+                <FloatingPill className="left-[5%] top-[15%] w-10 h-6 rotate-[-10deg]" />
+                <FloatingPill className="right-[5%] top-[20%] w-12 h-7 rotate-[20deg] blur-[1px]" />
 
                 <div className="text-center md:text-left">
                     <p className="text-[11px] font-bold tracking-widest uppercase text-gray-sec mb-2">
                         Who We Are
                     </p>
                     <h1
-                        ref={titleRef}
-                        className="text-5xl sm:text-6xl md:text-7xl font-extrabold text-black-main tracking-tighter mb-8 font-display"
+                        className="about-title text-5xl sm:text-6xl md:text-7xl font-extrabold text-black-main tracking-tighter mb-8 font-display"
                     >
                         RUNNER STUDIO
                     </h1>
@@ -128,18 +118,8 @@ export default function About({ onNavigate }: AboutProps) {
                     </div>
                 </section>
             </main>
-
-            {/* ---------- FOOTER ---------- */}
-            <footer className="border-t border-border-main px-6 sm:px-10 lg:px-14 py-10 flex flex-col sm:flex-row items-center justify-between gap-6 text-gray-sec text-[11px] font-medium uppercase tracking-wider">
-                <div className="flex items-center gap-6">
-                    <button onClick={() => onNavigate("home")} className="hover:text-black-main transition-colors cursor-pointer">Home</button>
-                    <button onClick={() => onNavigate("fins")} className="hover:text-black-main transition-colors cursor-pointer">Catalog</button>
-                    <a href="#" className="hover:text-black-main transition-colors">Privacy</a>
-                </div>
-                <div>
-                    &copy; 2026 Runner Space. All rights reserved.
-                </div>
-            </footer>
-        </div>
+        </PageLayout>
     );
-}
+};
+
+export default About;

@@ -1,20 +1,18 @@
 import { useState, useEffect, useRef } from "react";
 import gsap from "gsap";
+import type { Route } from "../../types";
+import { useCart } from "../../context/CartContext";
+import Logo from "../atoms/Logo";
+import BagButton from "../molecules/BagButton";
 
 interface NavbarProps {
-    onNavigate: (route: string) => void;
-    currentRoute: string;
-    bagTotal?: number;
-    bagItemsCount?: number;
+    onNavigate: (route: Route) => void;
+    currentRoute: Route;
 }
 
-export default function Navbar({
-    onNavigate,
-    currentRoute,
-    bagTotal = 0,
-    bagItemsCount = 0,
-}: NavbarProps) {
+export const Navbar: React.FC<NavbarProps> = ({ onNavigate, currentRoute }) => {
     const [isOpen, setIsOpen] = useState(false);
+    const { bagTotal, bagItemsCount } = useCart();
     const sidebarRef = useRef<HTMLDivElement>(null);
     const menuBtnRef = useRef<HTMLButtonElement>(null);
 
@@ -59,7 +57,7 @@ export default function Navbar({
         };
     }, [isOpen]);
 
-    const handleMobileLinkClick = (route: string) => {
+    const handleMobileLinkClick = (route: Route) => {
         setIsOpen(false);
         // Delay navigation slightly to let the menu close smoothly
         setTimeout(() => {
@@ -72,14 +70,7 @@ export default function Navbar({
             {/* ---------- MAIN HEADER ---------- */}
             <header className="relative z-30 flex items-center justify-between px-6 sm:px-10 lg:px-14 py-6 sm:py-8 bg-transparent">
                 {/* Logo */}
-                <button
-                    onClick={() => onNavigate("home")}
-                    className="flex items-center gap-[1px] text-lg sm:text-xl font-extrabold tracking-tight text-black-main select-none cursor-pointer"
-                    aria-label="Runner home"
-                >
-                    <span className="inline-block scale-x-[-1]">R</span>
-                    <span>unner</span>
-                </button>
+                <Logo onClick={() => onNavigate("home")} />
 
                 {/* Desktop Nav Links */}
                 <nav className="hidden md:flex items-center gap-8 text-[11px] font-semibold tracking-widest uppercase text-black-main">
@@ -126,17 +117,11 @@ export default function Navbar({
                     </span>
 
                     {/* Bag Button */}
-                    <button
+                    <BagButton
+                        totalPrice={bagTotal}
+                        itemsCount={bagItemsCount}
                         onClick={() => onNavigate("product")}
-                        className="flex items-center gap-2 border border-border-main rounded-full pl-4 pr-1.5 py-1.5 cursor-pointer bg-card-bg hover:bg-black-main hover:text-white transition-all duration-300"
-                    >
-                        <span className="text-[11px] font-semibold tracking-widest uppercase whitespace-nowrap">
-                            Bag &middot; ${bagTotal}
-                        </span>
-                        <span className="flex items-center justify-center w-5 h-5 rounded-full bg-black-main text-white text-[10px] font-bold">
-                            {bagItemsCount}
-                        </span>
-                    </button>
+                    />
 
                     {/* Mobile Hamburger Button */}
                     <button
@@ -211,4 +196,6 @@ export default function Navbar({
             </div>
         </>
     );
-}
+};
+
+export default Navbar;

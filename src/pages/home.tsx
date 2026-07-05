@@ -1,65 +1,58 @@
-import { useEffect, useRef } from "react";
-import gsap from "gsap";
-import Navbar from "../components/Navbar";
+import React, { useRef, useMemo } from "react";
+import type { Route } from "../types";
+import { useFloatingPills } from "../hooks/useFloatingPills";
+import { usePageEntrance } from "../hooks/usePageEntrance";
+import PageLayout from "../components/templates/PageLayout";
+import FloatingPill from "../components/atoms/FloatingPill";
+import Button from "../components/atoms/Button";
 
 interface HomeProps {
-    onNavigate: (route: string) => void;
+    onNavigate: (route: Route) => void;
 }
 
-export default function Home({ onNavigate }: HomeProps) {
+export const Home: React.FC<HomeProps> = ({ onNavigate }) => {
     const heroRef = useRef<HTMLDivElement>(null);
     const titleRef = useRef<HTMLHeadingElement>(null);
-    const navButtonsRef = useRef<HTMLDivElement>(null);
 
-    useEffect(() => {
-        const ctx = gsap.context(() => {
-            gsap.fromTo(
-                titleRef.current,
-                { y: 80, opacity: 0 },
-                { y: 0, opacity: 1, duration: 1.2, ease: "power4.out" }
-            );
+    // Apply floating animations to pills
+    useFloatingPills(heroRef);
 
-            gsap.fromTo(
-                ".nav-btn",
-                { y: 30, opacity: 0 },
-                {
+    // Entrance GSAP animation config
+    const entranceAnimations = useMemo(
+        () => [
+            {
+                selector: titleRef.current as unknown as string,
+                from: { y: 80, opacity: 0 },
+                to: { y: 0, opacity: 1, duration: 1.2, ease: "power4.out" },
+            },
+            {
+                selector: ".nav-btn",
+                from: { y: 30, opacity: 0 },
+                to: {
                     y: 0,
                     opacity: 1,
                     duration: 0.8,
                     stagger: 0.1,
                     delay: 0.4,
                     ease: "power3.out",
-                }
-            );
+                },
+            },
+        ],
+        []
+    );
 
-            // Subtle floating animation for decorative abstract pills
-            gsap.to(".floating-pill", {
-                y: "random(-10, 10)",
-                x: "random(-8, 8)",
-                rotation: "random(-5, 5)",
-                duration: "random(4, 6)",
-                repeat: -1,
-                yoyo: true,
-                ease: "sine.inOut"
-            });
-        }, heroRef);
-
-        return () => ctx.revert();
-    }, []);
+    usePageEntrance(heroRef, entranceAnimations);
 
     return (
-        <div ref={heroRef} className="relative w-full min-h-screen bg-ivory text-black-main overflow-hidden flex flex-col justify-between font-sans">
-            <Navbar onNavigate={onNavigate} currentRoute="home" />
+        <PageLayout onNavigate={onNavigate} currentRoute="home" showFooterLinks={false}>
+            <main ref={heroRef} className="relative flex-1 flex flex-col items-center justify-center px-6 min-h-[70vh]">
+                {/* Decorative floating pills */}
+                <FloatingPill className="left-[12%] top-[25%] w-12 h-7 rotate-[-15deg]" />
+                <FloatingPill className="left-[24%] top-[12%] w-8 h-5 rotate-[20deg] blur-[1px]" />
+                <FloatingPill className="right-[14%] top-[18%] w-14 h-8 rotate-[30deg]" />
+                <FloatingPill className="right-[28%] bottom-[20%] w-10 h-6 rotate-[-8deg] blur-[1px]" />
 
-            {/* ---------- HERO SECTION ---------- */}
-            <main className="relative flex-1 flex flex-col items-center justify-center px-6">
-                {/* Decorative floating pills (matching shoe material/color: cream/off-white) */}
-                <span className="floating-pill pointer-events-none absolute left-[12%] top-[25%] w-12 h-7 rounded-full bg-card-bg border border-border-main opacity-85 rotate-[-15deg] blur-[0.5px]" />
-                <span className="floating-pill pointer-events-none absolute left-[24%] top-[12%] w-8 h-5 rounded-full bg-card-bg border border-border-main opacity-70 rotate-[20deg] blur-[1px]" />
-                <span className="floating-pill pointer-events-none absolute right-[14%] top-[18%] w-14 h-8 rounded-full bg-card-bg border border-border-main opacity-85 rotate-[30deg] blur-[0.5px]" />
-                <span className="floating-pill pointer-events-none absolute right-[28%] bottom-[20%] w-10 h-6 rounded-full bg-card-bg border border-border-main opacity-70 rotate-[-8deg] blur-[1px]" />
-
-                {/* Giant Wordmark in Audiowide */}
+                {/* Giant Wordmark */}
                 <div className="relative text-center select-none w-full max-w-5xl overflow-hidden py-4">
                     <h1
                         ref={titleRef}
@@ -73,43 +66,39 @@ export default function Home({ onNavigate }: HomeProps) {
                 </div>
 
                 {/* Navigation Buttons Row */}
-                <div ref={navButtonsRef} className="flex flex-wrap justify-center gap-4 mt-12 max-w-2xl">
-                    <button
+                <div className="flex flex-wrap justify-center gap-4 mt-12 max-w-2xl">
+                    <Button
                         onClick={() => onNavigate("product")}
-                        className="nav-btn px-8 py-4 bg-black-main text-white text-[11px] font-bold tracking-widest uppercase rounded-md hover:opacity-90 hover:scale-[1.02] active:scale-[0.98] transition-all cursor-pointer border border-black-main"
+                        variant="primary"
+                        className="nav-btn"
                     >
                         Shop Sneakers
-                    </button>
-                    <button
+                    </Button>
+                    <Button
                         onClick={() => onNavigate("fins")}
-                        className="nav-btn px-8 py-4 bg-card-bg text-black-main text-[11px] font-bold tracking-widest uppercase rounded-md border border-border-main hover:bg-black-main hover:text-white hover:scale-[1.02] active:scale-[0.98] transition-all cursor-pointer"
+                        variant="secondary"
+                        className="nav-btn"
                     >
                         Explore Fins
-                    </button>
-                    <button
+                    </Button>
+                    <Button
                         onClick={() => onNavigate("about")}
-                        className="nav-btn px-8 py-4 bg-card-bg text-black-main text-[11px] font-bold tracking-widest uppercase rounded-md border border-border-main hover:bg-black-main hover:text-white hover:scale-[1.02] active:scale-[0.98] transition-all cursor-pointer"
+                        variant="secondary"
+                        className="nav-btn"
                     >
                         About Studio
-                    </button>
-                    <button
+                    </Button>
+                    <Button
                         onClick={() => onNavigate("contact")}
-                        className="nav-btn px-8 py-4 bg-card-bg text-black-main text-[11px] font-bold tracking-widest uppercase rounded-md border border-border-main hover:bg-black-main hover:text-white hover:scale-[1.02] active:scale-[0.98] transition-all cursor-pointer"
+                        variant="secondary"
+                        className="nav-btn"
                     >
                         Contact
-                    </button>
+                    </Button>
                 </div>
             </main>
-
-            {/* ---------- FOOTER ---------- */}
-            <footer className="border-t border-border-main px-6 sm:px-10 lg:px-14 py-8 flex flex-col sm:flex-row items-center justify-between gap-4 text-gray-sec text-[10px] font-semibold uppercase tracking-widest">
-                <div>
-                    RUNNER SPACE &middot; NEXT-GEN DESIGN
-                </div>
-                <div>
-                    &copy; 2026. All rights reserved.
-                </div>
-            </footer>
-        </div>
+        </PageLayout>
     );
-}
+};
+
+export default Home;
