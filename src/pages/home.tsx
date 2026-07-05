@@ -21,12 +21,12 @@ export const Home: React.FC<HomeProps> = ({ onNavigate }) => {
     const entranceAnimations = useMemo(
         () => [
             {
-                selector: titleRef.current as unknown as string,
+                target: titleRef,
                 from: { y: 80, opacity: 0 },
                 to: { y: 0, opacity: 1, duration: 1.2, ease: "power4.out" },
             },
             {
-                selector: ".nav-btn",
+                target: ".nav-btn",
                 from: { y: 30, opacity: 0 },
                 to: {
                     y: 0,

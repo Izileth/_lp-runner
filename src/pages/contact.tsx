@@ -12,6 +12,7 @@ interface ContactProps {
 
 export const Contact: React.FC<ContactProps> = ({ onNavigate }) => {
     const containerRef = useRef<HTMLDivElement>(null);
+    const titleRef = useRef<HTMLHeadingElement>(null);
 
     // Apply floating animations to pills
     useFloatingPills(containerRef);
@@ -20,17 +21,17 @@ export const Contact: React.FC<ContactProps> = ({ onNavigate }) => {
     const entranceAnimations = useMemo(
         () => [
             {
-                selector: ".contact-title",
+                target: titleRef,
                 from: { y: 60, opacity: 0 },
                 to: { y: 0, opacity: 1, duration: 1.0, ease: "power4.out" },
             },
             {
-                selector: ".contact-info-block",
+                target: ".contact-info-block",
                 from: { opacity: 0, x: -30 },
                 to: { opacity: 1, x: 0, duration: 0.8, delay: 0.3, ease: "power3.out" },
             },
             {
-                selector: ".contact-form-block",
+                target: ".contact-form-block",
                 from: { opacity: 0, x: 30 },
                 to: { opacity: 1, x: 0, duration: 0.8, delay: 0.3, ease: "power3.out" },
             },

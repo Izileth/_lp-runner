@@ -11,6 +11,7 @@ interface AboutProps {
 
 export const About: React.FC<AboutProps> = ({ onNavigate }) => {
     const containerRef = useRef<HTMLDivElement>(null);
+    const titleRef = useRef<HTMLHeadingElement>(null);
 
     // Apply floating animations to pills
     useFloatingPills(containerRef);
@@ -19,17 +20,17 @@ export const About: React.FC<AboutProps> = ({ onNavigate }) => {
     const entranceAnimations = useMemo(
         () => [
             {
-                selector: ".about-title",
+                target: titleRef,
                 from: { y: 40, opacity: 0 },
                 to: { y: 0, opacity: 1, duration: 1.0, ease: "power4.out" },
             },
             {
-                selector: ".about-content",
+                target: ".about-content",
                 from: { opacity: 0, y: 30 },
                 to: { opacity: 1, y: 0, duration: 0.8, delay: 0.3, ease: "power3.out" },
             },
             {
-                selector: ".grid-item",
+                target: ".grid-item",
                 from: { opacity: 0, y: 40 },
                 to: {
                     opacity: 1,
@@ -58,7 +59,8 @@ export const About: React.FC<AboutProps> = ({ onNavigate }) => {
                         Who We Are
                     </p>
                     <h1
-                        className="about-title text-5xl sm:text-6xl md:text-7xl font-extrabold text-black-main tracking-tighter mb-8 font-display"
+                        ref={titleRef}
+                        className="text-5xl sm:text-6xl md:text-7xl font-extrabold text-black-main tracking-tighter mb-8 font-display"
                     >
                         RUNNER STUDIO
                     </h1>

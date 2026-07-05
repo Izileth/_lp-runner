@@ -76,12 +76,12 @@ export const Fins: React.FC<FinsProps> = ({ onNavigate }) => {
     const entranceAnimations = useMemo(
         () => [
             {
-                selector: titleRef.current as unknown as string,
+                target: titleRef,
                 from: { y: 80, opacity: 0 },
                 to: { y: 0, opacity: 1, duration: 1.0, ease: "power4.out" },
             },
             {
-                selector: ".fin-selector-btn",
+                target: ".fin-selector-btn",
                 from: { opacity: 0, x: -20 },
                 to: {
                     opacity: 1,
@@ -93,7 +93,7 @@ export const Fins: React.FC<FinsProps> = ({ onNavigate }) => {
                 },
             },
             {
-                selector: ".details-panel",
+                target: ".details-panel",
                 from: { opacity: 0, y: 30 },
                 to: { opacity: 1, y: 0, duration: 0.8, delay: 0.5, ease: "power3.out" },
             },

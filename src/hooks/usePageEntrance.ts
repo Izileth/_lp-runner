@@ -2,7 +2,7 @@ import { useEffect } from "react";
 import gsap from "gsap";
 
 interface AnimationConfig {
-    selector: string;
+    target: string | React.RefObject<any>;
     from: gsap.TweenVars;
     to: gsap.TweenVars;
 }
@@ -19,8 +19,11 @@ export function usePageEntrance(
         if (!containerRef.current) return;
 
         const ctx = gsap.context(() => {
-            animations.forEach(({ selector, from, to }) => {
-                gsap.fromTo(selector, from, to);
+            animations.forEach(({ target, from, to }) => {
+                const element = typeof target === "string" ? target : target.current;
+                if (element) {
+                    gsap.fromTo(element, from, to);
+                }
             });
         }, containerRef);
 
