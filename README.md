@@ -60,6 +60,30 @@ lp-space/
 
 ---
 
+## 📐 Padrões de Projeto (Design Patterns)
+
+O projeto foi estruturado seguindo boas práticas de arquitetura e padrões de design modernos do ecossistema React:
+
+### 1. Atomic Design (Design Atômico)
+Para a organização da interface do usuário (UI), os componentes foram categorizados sob os conceitos de:
+*   **Atoms**: Elementos básicos de UI que não podem ser divididos sem perder sua função (ex: botões simples, inputs de formulário).
+*   **Molecules**: Combinações simples de átomos que funcionam juntas como uma unidade (ex: botões seletores com estado, campos de formulário agrupados).
+*   **Organisms**: Componentes mais complexos que combinam moléculas e átomos para formar seções inteiras da página (ex: Navbar, Footer, Formulários de contato).
+*   **Templates**: Estruturas de layout de página reutilizáveis que definem a disposição básica sem conter o conteúdo definitivo (ex: `PageLayout`).
+
+### 2. Provider Pattern (Context API)
+Utilizado para o gerenciamento de estado global e compartilhamento de dados transversais entre componentes distantes na árvore DOM:
+*   **[CartContext](file:///C:/Users/kawak/_projects/_lp/_lp-space/src/context/CartContext.tsx)**: Encapsula as ações de adicionar, remover e atualizar itens no carrinho de compras, expondo um hook customizado e um Provider para a aplicação.
+
+### 3. Custom Hooks Pattern
+Separação de lógica e comportamento (especialmente efeitos visuais complexos como animações GSAP) do ciclo de vida direto da renderização dos componentes:
+*   **[useFloatingPills](file:///C:/Users/kawak/_projects/_lp/_lp-space/src/hooks/useFloatingPills.ts)** e **[usePageEntrance](file:///C:/Users/kawak/_projects/_lp/_lp-space/src/hooks/usePageEntrance.ts)**: Encapsulam as animações GSAP, facilitando a reutilização de animações físicas/gráficas sem duplicar código nos componentes de página.
+
+### 4. CSS-First Utility & Theme Pattern (Tailwind CSS v4)
+Adota a abordagem moderna do Tailwind CSS v4 para definição de Design System diretamente no arquivo CSS global (`index.css`), utilizando variáveis nativas do CSS (`--color-ivory`, `--font-display`, etc.) e diretivas `@theme` para garantir consistência de identidade visual e facilidade de manutenção de estilos.
+
+---
+
 ## 🛠️ Getting Started
 
 Follow these steps to run the project locally.
