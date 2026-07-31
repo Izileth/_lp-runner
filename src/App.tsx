@@ -6,9 +6,12 @@ import HeroYeezy from "./pages/product";
 import About from "./pages/about";
 import Fins from "./pages/fins";
 import Contact from "./pages/contact";
+import Login from "./pages/login";
+import Register from "./pages/register";
 import heroImage from "./assets/hero.png";
 import type { Route } from "./types";
 import { CartProvider } from "./context/CartContext";
+import { AuthProvider } from "./context/AuthContext";
 
 function App() {
     const navigate = useNavigate();
@@ -22,6 +25,8 @@ function App() {
             about: "/about",
             fins: "/fins",
             contact: "/contact",
+            login: "/login",
+            register: "/register",
         };
         const targetPath = paths[route] || "/";
 
@@ -51,29 +56,33 @@ function App() {
     };
 
     return (
-        <CartProvider>
-            <div className="min-h-screen bg-ivory text-black-main relative overflow-hidden">
-                <Routes>
-                    <RouterRoute path="/" element={<Home onNavigate={handleNavigate} />} />
-                    <RouterRoute path="/product" element={<HeroYeezy productImageUrl={heroImage} productName="Foam RNNR Ararat" onNavigate={handleNavigate} />} />
-                    <RouterRoute path="/about" element={<About onNavigate={handleNavigate} />} />
-                    <RouterRoute path="/fins" element={<Fins onNavigate={handleNavigate} />} />
-                    <RouterRoute path="/contact" element={<Contact onNavigate={handleNavigate} />} />
-                    <RouterRoute path="*" element={<Home onNavigate={handleNavigate} />} />
-                </Routes>
+        <AuthProvider>
+            <CartProvider>
+                <div className="min-h-screen bg-ivory text-black-main relative overflow-hidden">
+                    <Routes>
+                        <RouterRoute path="/" element={<Home onNavigate={handleNavigate} />} />
+                        <RouterRoute path="/product" element={<HeroYeezy productImageUrl={heroImage} productName="Foam RNNR Ararat" onNavigate={handleNavigate} />} />
+                        <RouterRoute path="/about" element={<About onNavigate={handleNavigate} />} />
+                        <RouterRoute path="/fins" element={<Fins onNavigate={handleNavigate} />} />
+                        <RouterRoute path="/contact" element={<Contact onNavigate={handleNavigate} />} />
+                        <RouterRoute path="/login" element={<Login onNavigate={handleNavigate} />} />
+                        <RouterRoute path="/register" element={<Register onNavigate={handleNavigate} />} />
+                        <RouterRoute path="*" element={<Home onNavigate={handleNavigate} />} />
+                    </Routes>
 
-                {/* GSAP Page Transition Curtain Overlay */}
-                <div
-                    ref={overlayRef}
-                    className="fixed inset-0 z-50 bg-black-main pointer-events-none transform translate-y-full flex items-center justify-center"
-                >
-                    <div className="text-ivory text-2xl font-extrabold tracking-widest uppercase font-display flex items-center gap-[1px]">
-                        <span className="inline-block scale-x-[-1]">R</span>
-                        <span>unner</span>
+                    {/* GSAP Page Transition Curtain Overlay */}
+                    <div
+                        ref={overlayRef}
+                        className="fixed inset-0 z-50 bg-black-main pointer-events-none transform translate-y-full flex items-center justify-center"
+                    >
+                        <div className="text-ivory text-2xl font-extrabold tracking-widest uppercase font-display flex items-center gap-[1px]">
+                            <span className="inline-block scale-x-[-1]">R</span>
+                            <span>unner</span>
+                        </div>
                     </div>
                 </div>
-            </div>
-        </CartProvider>
+            </CartProvider>
+        </AuthProvider>
     );
 }
 

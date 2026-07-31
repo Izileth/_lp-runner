@@ -1,4 +1,4 @@
-export type Route = "home" | "product" | "fins" | "about" | "contact";
+export type Route = "home" | "product" | "fins" | "about" | "contact" | "login" | "register";
 
 export interface FinSpecs {
     material: string;

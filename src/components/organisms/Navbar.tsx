@@ -2,8 +2,10 @@ import { useState, useEffect, useRef } from "react";
 import gsap from "gsap";
 import type { Route } from "../../types";
 import { useCart } from "../../context/CartContext";
+import { useAuth } from "../../context/AuthContext";
 import Logo from "../atoms/Logo";
 import BagButton from "../molecules/BagButton";
+import { User, LogOut } from "lucide-react";
 
 interface NavbarProps {
     onNavigate: (route: Route) => void;
@@ -13,6 +15,7 @@ interface NavbarProps {
 export const Navbar: React.FC<NavbarProps> = ({ onNavigate, currentRoute }) => {
     const [isOpen, setIsOpen] = useState(false);
     const { bagTotal, bagItemsCount } = useCart();
+    const { user, signOut } = useAuth();
     const sidebarRef = useRef<HTMLDivElement>(null);
     const menuBtnRef = useRef<HTMLButtonElement>(null);
 
@@ -111,10 +114,34 @@ export const Navbar: React.FC<NavbarProps> = ({ onNavigate, currentRoute }) => {
 
                 {/* Right Area: Account/Bag + Mobile Hamburger */}
                 <div className="flex items-center gap-3 sm:gap-4">
-                    {/* Account (hidden on tiny screens) */}
-                    <span className="hidden sm:inline text-[11px] font-semibold tracking-widest uppercase text-black-main">
-                        Account
-                    </span>
+                    {/* Account Button */}
+                    {user ? (
+                        <div className="hidden sm:flex items-center gap-3">
+                            <button
+                                onClick={() => onNavigate("home")}
+                                className="flex items-center gap-1.5 text-[11px] font-semibold tracking-widest uppercase text-black-main hover:opacity-60 transition-opacity cursor-pointer"
+                            >
+                                <User className="w-3.5 h-3.5" />
+                                {user.user_metadata?.full_name?.split(" ")[0] || "Account"}
+                            </button>
+                            <button
+                                onClick={() => signOut()}
+                                className="text-gray-sec hover:text-black-main transition-colors cursor-pointer"
+                                aria-label="Sign out"
+                                title="Sign out"
+                            >
+                                <LogOut className="w-3.5 h-3.5" />
+                            </button>
+                        </div>
+                    ) : (
+                        <button
+                            onClick={() => onNavigate("login" as Route)}
+                            className="hidden sm:inline-flex items-center gap-1.5 text-[11px] font-semibold tracking-widest uppercase text-black-main hover:opacity-60 transition-opacity cursor-pointer"
+                        >
+                            <User className="w-3.5 h-3.5" />
+                            Sign In
+                        </button>
+                    )}
 
                     {/* Bag Button */}
                     <BagButton
