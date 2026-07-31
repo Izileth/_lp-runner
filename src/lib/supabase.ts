@@ -7,7 +7,9 @@ if (!supabaseUrl || !supabaseAnonKey) {
   console.warn('Variáveis de ambiente do Supabase ausentes. Por favor, configure o arquivo .env');
 }
 
-export const supabase = createClient(
-  supabaseUrl || 'https://placeholder.supabase.co',
-  supabaseAnonKey || 'placeholder-anon-key'
-);
+export const supabase = createClient(supabaseUrl ,supabaseAnonKey)  ;
+
+
+
+
+
