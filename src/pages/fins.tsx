@@ -1,4 +1,4 @@
-import React, { useState, useRef, useMemo } from "react";
+import React, { useState, useRef, useMemo, useEffect } from "react";
 import gsap from "gsap";
 import type { Route } from "../types";
 import { useCart } from "../context/CartContext";
@@ -8,7 +8,8 @@ import PageLayout from "../components/templates/PageLayout";
 import FloatingPill from "../components/atoms/FloatingPill";
 import FinSelectorButton from "../components/molecules/FinSelectorButton";
 import FinDetailsPanel from "../components/organisms/FinDetailsPanel";
-import { FINS_DATA } from "../data/fins";
+import { supabase } from "../lib/supabase";
+import type { FinProduct } from "../types";
 
 interface FinsProps {
     onNavigate: (route: Route) => void;
@@ -20,7 +21,29 @@ export const Fins: React.FC<FinsProps> = ({ onNavigate }) => {
     const titleRef = useRef<HTMLHeadingElement>(null);
     const { addToBag } = useCart();
 
-    const activeFin = FINS_DATA[selectedFinIndex];
+    const [fins, setFins] = useState<FinProduct[]>([]);
+    const [loading, setLoading] = useState(true);
+    const [error, setError] = useState<string | null>(null);
+
+    useEffect(() => {
+        const fetchFins = async () => {
+            try {
+                const { data, error } = await supabase.from('fins').select('*');
+                if (error) throw error;
+                // Parse specs from jsonb if necessary, assuming supabase returns them correctly
+                setFins(data || []);
+            } catch (err: any) {
+                console.error("Error fetching fins:", err);
+                setError(err.message);
+            } finally {
+                setLoading(false);
+            }
+        };
+
+        fetchFins();
+    }, []);
+
+    const activeFin = fins[selectedFinIndex];
 
     // Apply floating animations to pills
     useFloatingPills(containerRef);
@@ -66,6 +89,7 @@ export const Fins: React.FC<FinsProps> = ({ onNavigate }) => {
     };
 
     const handleAddToBag = () => {
+        if (!activeFin) return;
         addToBag({
             id: activeFin.id,
             name: activeFin.name,
@@ -105,18 +129,24 @@ export const Fins: React.FC<FinsProps> = ({ onNavigate }) => {
                             <p className="text-[10px] font-bold tracking-widest uppercase text-gray-sec mb-2">
                                 Select Model
                             </p>
-                            {FINS_DATA.map((fin, idx) => (
-                                <FinSelectorButton
-                                    key={fin.id}
-                                    fin={fin}
-                                    isSelected={selectedFinIndex === idx}
-                                    onClick={() => handleFinSelect(idx)}
-                                />
-                            ))}
+                            {loading ? (
+                                <p>Loading fins...</p>
+                            ) : error ? (
+                                <p className="text-red-500">Error: {error}</p>
+                            ) : (
+                                fins.map((fin, idx) => (
+                                    <FinSelectorButton
+                                        key={fin.id}
+                                        fin={fin}
+                                        isSelected={selectedFinIndex === idx}
+                                        onClick={() => handleFinSelect(idx)}
+                                    />
+                                ))
+                            )}
                         </div>
 
                         {/* Specification / Details Panel */}
-                        <FinDetailsPanel fin={activeFin} onAddToBag={handleAddToBag} />
+                        {activeFin && <FinDetailsPanel fin={activeFin} onAddToBag={handleAddToBag} />}
                     </div>
                 </main>
             </div>
