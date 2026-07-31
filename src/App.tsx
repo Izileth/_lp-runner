@@ -1,4 +1,5 @@
-import { useState, useRef } from "react";
+import { useRef } from "react";
+import { Routes, Route as RouterRoute, useNavigate, useLocation } from "react-router-dom";
 import gsap from "gsap";
 import Home from "./pages/home";
 import HeroYeezy from "./pages/product";
@@ -10,16 +11,26 @@ import type { Route } from "./types";
 import { CartProvider } from "./context/CartContext";
 
 function App() {
-    const [currentRoute, setCurrentRoute] = useState<Route>("home");
+    const navigate = useNavigate();
+    const location = useLocation();
     const overlayRef = useRef<HTMLDivElement>(null);
 
     const handleNavigate = (route: Route) => {
-        if (route === currentRoute) return;
+        const paths: Record<Route, string> = {
+            home: "/",
+            product: "/product",
+            about: "/about",
+            fins: "/fins",
+            contact: "/contact",
+        };
+        const targetPath = paths[route] || "/";
+
+        if (location.pathname === targetPath) return;
 
         // Visual transition timeline
         const tl = gsap.timeline({
             onComplete: () => {
-                setCurrentRoute(route);
+                navigate(targetPath);
                 window.scrollTo({ top: 0, behavior: "instant" });
 
                 // Out animation (slide overlay upwards to reveal new content)
@@ -39,33 +50,17 @@ function App() {
         );
     };
 
-    const renderRoute = () => {
-        switch (currentRoute) {
-            case "home":
-                return <Home onNavigate={handleNavigate} />;
-            case "product":
-                return (
-                    <HeroYeezy
-                        productImageUrl={heroImage}
-                        productName="Foam RNNR Ararat"
-                        onNavigate={handleNavigate}
-                    />
-                );
-            case "about":
-                return <About onNavigate={handleNavigate} />;
-            case "fins":
-                return <Fins onNavigate={handleNavigate} />;
-            case "contact":
-                return <Contact onNavigate={handleNavigate} />;
-            default:
-                return <Home onNavigate={handleNavigate} />;
-        }
-    };
-
     return (
         <CartProvider>
             <div className="min-h-screen bg-ivory text-black-main relative overflow-hidden">
-                {renderRoute()}
+                <Routes>
+                    <RouterRoute path="/" element={<Home onNavigate={handleNavigate} />} />
+                    <RouterRoute path="/product" element={<HeroYeezy productImageUrl={heroImage} productName="Foam RNNR Ararat" onNavigate={handleNavigate} />} />
+                    <RouterRoute path="/about" element={<About onNavigate={handleNavigate} />} />
+                    <RouterRoute path="/fins" element={<Fins onNavigate={handleNavigate} />} />
+                    <RouterRoute path="/contact" element={<Contact onNavigate={handleNavigate} />} />
+                    <RouterRoute path="*" element={<Home onNavigate={handleNavigate} />} />
+                </Routes>
 
                 {/* GSAP Page Transition Curtain Overlay */}
                 <div
