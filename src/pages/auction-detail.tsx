@@ -10,7 +10,8 @@ import type { Auction, Bid, Route } from "../types";
 import { ArrowLeft } from "lucide-react";
 
 interface AuctionDetailProps {
-    onNavigate: (route: Route) => void;
+    auctionId: string;
+    onNavigate: (route: Route, itemId?: string) => void;
 }
 
 export const AuctionDetail: React.FC<AuctionDetailProps> = ({ auctionId, onNavigate }) => {
@@ -21,16 +22,16 @@ export const AuctionDetail: React.FC<AuctionDetailProps> = ({ auctionId, onNavig
     const [auction, setAuction] = useState<Auction | null>(null);
     const [bids, setBids] = useState<Bid[]>([]);
     const [bidAmount, setBidAmount] = useState<string>("");
-  //  const [ setLoading] = useState(true);
-   // const [ setFetchError] = useState<string | null>(null);
+    //  const [ setLoading] = useState(true);
+    // const [ setFetchError] = useState<string | null>(null);
     const [bidding, setBidding] = useState(false);
     const [message, setMessage] = useState<{ type: "success" | "error"; text: string } | null>(null);
 
     // Carregar dados do leilão e histórico de lances
     const fetchAuctionData = async () => {
         try {
-           // setLoading(true);
-          //  setFetchError(null);
+            // setLoading(true);
+            //  setFetchError(null);
 
             const { data: auctionData, error: auctionError } = await supabase
                 .from("auctions")
@@ -66,7 +67,7 @@ export const AuctionDetail: React.FC<AuctionDetailProps> = ({ auctionId, onNavig
             console.error("Erro ao carregar leilão:", err);
             //setFetchError(err.message || "Não foi possível carregar os detalhes do leilão.");
         } finally {
-           // setLoading(false);
+            // setLoading(false);
         }
     };
 

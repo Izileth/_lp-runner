@@ -1,5 +1,5 @@
 import { useRef } from "react";
-import { Routes, Route as RouterRoute, useNavigate, useLocation } from "react-router-dom";
+import { Routes, Route as RouterRoute, useNavigate, useLocation, useParams } from "react-router-dom";
 import gsap from "gsap";
 import Home from "./pages/home";
 import Login from "./pages/login";
@@ -13,7 +13,8 @@ import { CartProvider } from "./context/CartContext";
 import { AuthProvider } from "./context/AuthContext";
 
 function AuctionDetailWrapper({ onNavigate }: { onNavigate: (route: Route, itemId?: string) => void }) {
-    return <AuctionDetail onNavigate={onNavigate} />;
+    const { id } = useParams<{ id: string }>();
+    return <AuctionDetail auctionId={id || ""} onNavigate={onNavigate} />;
 }
 
 function App() {
