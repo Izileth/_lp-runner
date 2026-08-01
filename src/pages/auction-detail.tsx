@@ -3,7 +3,7 @@ import { supabase } from "../lib/supabase";
 import { useAuth } from "../context/AuthContext";
 import PageLayout from "../components/templates/PageLayout";
 import { usePageAnimations } from "../hooks/usePageAnimations";
-import { AuctionDetailSkeletonLoader, AuctionErrorState } from "../components/molecules/AuctionLoaders";
+//import { AuctionDetailSkeletonLoader, AuctionErrorState } from "../components/molecules/AuctionLoaders";
 import Button from "../components/atoms/Button";
 import FloatingPill from "../components/atoms/FloatingPill";
 import type { Auction, Bid, Route } from "../types";
@@ -150,14 +150,14 @@ export const AuctionDetail: React.FC<AuctionDetailProps> = ({ auctionId, onNavig
                         className="select-none text-[20vw] sm:text-[16vw] lg:text-[11vw] leading-[0.8] text-black-main whitespace-nowrap font-display uppercase anim-title absolute z-0 opacity-[0.03]"
                         style={{ letterSpacing: "-0.03em" }}
                     >
-                        {vehicle.brand}
+                        {vehicle?.brand}
                     </h1>
 
                     {/* Product image, centered on top of the wordmark */}
                     <div className="relative z-10 w-[70%] sm:w-[50%] lg:w-[40%] aspect-[16/9] flex items-center justify-center anim-fade-up">
                         <img
                             src={coverImage}
-                            alt={vehicle.model}
+                            alt={vehicle?.model}
                             className="w-full h-full object-cover rounded-xl shadow-2xl drop-shadow-[0_15px_25px_rgba(0,0,0,0.15)] grayscale hover:grayscale-0 transition-all duration-700"
                         />
                     </div>
@@ -180,32 +180,32 @@ export const AuctionDetail: React.FC<AuctionDetailProps> = ({ auctionId, onNavig
                         <div className="flex-1 flex flex-col gap-6">
                             <div>
                                 <p className="text-[10px] sm:text-[11px] font-bold tracking-widest uppercase text-gray-sec">
-                                    {vehicle.brand}
+                                    {vehicle?.brand}
                                 </p>
                                 <h2 className="text-3xl sm:text-5xl font-black text-black-main font-display leading-none uppercase tracking-tight">
-                                    {vehicle.model}
+                                    {vehicle?.model}
                                 </h2>
                                 <p className="text-sm sm:text-base text-gray-sec mt-2 max-w-lg leading-relaxed">
-                                    {vehicle.description || `Lote exclusivo ${vehicle.brand} ${vehicle.model}. Condição: ${vehicle.condition}.`}
+                                    {vehicle?.description || `Lote exclusivo ${vehicle?.brand} ${vehicle?.model}. Condição: ${vehicle?.condition}.`}
                                 </p>
                             </div>
 
                             <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 py-6 border-y border-border-main">
                                 <div>
                                     <span className="block text-[9px] font-bold tracking-widest text-gray-sec uppercase mb-1">Ano</span>
-                                    <span className="font-semibold text-black-main">{vehicle.year_manufacture}/{vehicle.year_model || vehicle.year_manufacture}</span>
+                                    <span className="font-semibold text-black-main">{vehicle?.year_manufacture}/{vehicle?.year_model || vehicle?.year_manufacture}</span>
                                 </div>
                                 <div>
                                     <span className="block text-[9px] font-bold tracking-widest text-gray-sec uppercase mb-1">KM</span>
-                                    <span className="font-semibold text-black-main">{vehicle.mileage.toLocaleString('pt-BR')}</span>
+                                    <span className="font-semibold text-black-main">{vehicle?.mileage?.toLocaleString('pt-BR')}</span>
                                 </div>
                                 <div>
                                     <span className="block text-[9px] font-bold tracking-widest text-gray-sec uppercase mb-1">Cor</span>
-                                    <span className="font-semibold text-black-main capitalize">{vehicle.color || "N/I"}</span>
+                                    <span className="font-semibold text-black-main capitalize">{vehicle?.color || "N/I"}</span>
                                 </div>
                                 <div>
                                     <span className="block text-[9px] font-bold tracking-widest text-gray-sec uppercase mb-1">Condição</span>
-                                    <span className="font-semibold text-black-main capitalize">{vehicle.condition}</span>
+                                    <span className="font-semibold text-black-main capitalize">{vehicle?.condition}</span>
                                 </div>
                             </div>
                         </div>
@@ -218,10 +218,10 @@ export const AuctionDetail: React.FC<AuctionDetailProps> = ({ auctionId, onNavig
                                         Lance Atual
                                     </p>
                                     <p className="text-4xl font-black text-black-main font-display tracking-tight">
-                                        R$ {(auction.current_price || vehicle.starting_price).toLocaleString('pt-BR', { minimumFractionDigits: 2 })}
+                                        R$ {(auction?.current_price || vehicle?.starting_price)?.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}
                                     </p>
                                     <span className="text-[10px] font-medium text-gray-sec mt-1 block">
-                                        Incremento mínimo: R$ {auction.min_increment.toLocaleString('pt-BR')}
+                                        Incremento mínimo: R$ {auction?.min_increment?.toLocaleString('pt-BR')}
                                     </span>
                                 </div>
 
@@ -231,14 +231,14 @@ export const AuctionDetail: React.FC<AuctionDetailProps> = ({ auctionId, onNavig
                                     </div>
                                 )}
 
-                                {auction.status === "ativo" ? (
+                                {auction?.status === "ativo" ? (
                                     <form onSubmit={handlePlaceBid} className="space-y-4">
                                         <div>
                                             <label className="block text-[9px] font-bold tracking-widest text-gray-sec uppercase mb-2">Seu Lance (R$)</label>
                                             <input
                                                 type="number"
                                                 min={minAllowed}
-                                                step={auction.min_increment}
+                                                step={auction?.min_increment}
                                                 value={bidAmount}
                                                 onChange={(e) => setBidAmount(e.target.value)}
                                                 className="w-full bg-white border border-border-main rounded-md px-4 py-3 text-black-main font-bold focus:border-black-main focus:outline-none transition-colors"
@@ -255,7 +255,7 @@ export const AuctionDetail: React.FC<AuctionDetailProps> = ({ auctionId, onNavig
                                     </form>
                                 ) : (
                                     <div className="p-4 rounded-md bg-gray-100 border border-border-main text-center text-gray-sec text-[10px] font-bold uppercase tracking-widest">
-                                        Leilão {auction.status}
+                                        Leilão {auction?.status}
                                     </div>
                                 )}
                             </div>
