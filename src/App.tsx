@@ -2,17 +2,12 @@ import { useRef } from "react";
 import { Routes, Route as RouterRoute, useNavigate, useLocation, useParams } from "react-router-dom";
 import gsap from "gsap";
 import Home from "./pages/home";
-import HeroYeezy from "./pages/product";
-import About from "./pages/about";
-import Fins from "./pages/fins";
-import Contact from "./pages/contact";
 import Login from "./pages/login";
 import Register from "./pages/register";
 import Profile from "./pages/profile";
 import { Auctions } from "./pages/auctions";
 import { CreateAuction } from "./pages/create-auction";
 import { AuctionDetail } from "./pages/auction-detail";
-import heroImage from "./assets/hero.png";
 import type { Route } from "./types";
 import { CartProvider } from "./context/CartContext";
 import { AuthProvider } from "./context/AuthContext";
@@ -74,10 +69,6 @@ function App() {
                 <div className="min-h-screen bg-ivory text-black-main relative overflow-hidden">
                     <Routes>
                         <RouterRoute path="/" element={<Home onNavigate={handleNavigate} />} />
-                        <RouterRoute path="/product" element={<HeroYeezy productImageUrl={heroImage} productName="Foam RNNR Ararat" onNavigate={handleNavigate} />} />
-                        <RouterRoute path="/about" element={<About onNavigate={handleNavigate} />} />
-                        <RouterRoute path="/fins" element={<Fins onNavigate={handleNavigate} />} />
-                        <RouterRoute path="/contact" element={<Contact onNavigate={handleNavigate} />} />
                         <RouterRoute path="/login" element={<Login onNavigate={handleNavigate} />} />
                         <RouterRoute path="/register" element={<Register onNavigate={handleNavigate} />} />
                         <RouterRoute path="/profile" element={<Profile onNavigate={handleNavigate} />} />

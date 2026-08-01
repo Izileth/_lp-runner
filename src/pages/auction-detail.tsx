@@ -21,16 +21,16 @@ export const AuctionDetail: React.FC<AuctionDetailProps> = ({ auctionId, onNavig
     const [auction, setAuction] = useState<Auction | null>(null);
     const [bids, setBids] = useState<Bid[]>([]);
     const [bidAmount, setBidAmount] = useState<string>("");
-    const [loading, setLoading] = useState(true);
-    const [fetchError, setFetchError] = useState<string | null>(null);
+  //  const [ setLoading] = useState(true);
+   // const [ setFetchError] = useState<string | null>(null);
     const [bidding, setBidding] = useState(false);
     const [message, setMessage] = useState<{ type: "success" | "error"; text: string } | null>(null);
 
     // Carregar dados do leilão e histórico de lances
     const fetchAuctionData = async () => {
         try {
-            setLoading(true);
-            setFetchError(null);
+           // setLoading(true);
+          //  setFetchError(null);
 
             const { data: auctionData, error: auctionError } = await supabase
                 .from("auctions")
@@ -64,16 +64,24 @@ export const AuctionDetail: React.FC<AuctionDetailProps> = ({ auctionId, onNavig
             setBids(bidsData || []);
         } catch (err: any) {
             console.error("Erro ao carregar leilão:", err);
-            setFetchError(err.message || "Não foi possível carregar os detalhes do leilão.");
+            //setFetchError(err.message || "Não foi possível carregar os detalhes do leilão.");
         } finally {
-            setLoading(false);
+           // setLoading(false);
         }
     };
 
     useEffect(() => {
-        if (auctionId) {
-            fetchAuctionData();
-        }
+        if (!auctionId) return;
+
+        const loadAuctionData = async () => {
+            try {
+                await fetchAuctionData();
+            } catch (err) {
+                console.error("Erro ao carregar o leilão na effect:", err);
+            }
+        };
+
+        loadAuctionData();
 
         const bidsSubscription = supabase
             .channel(`auction-${auctionId}`)
