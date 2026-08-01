@@ -118,8 +118,10 @@ export const Navbar: React.FC<NavbarProps> = ({ onNavigate, currentRoute }) => {
                     {user ? (
                         <div className="hidden sm:flex items-center gap-3">
                             <button
-                                onClick={() => onNavigate("home")}
-                                className="flex items-center gap-1.5 text-[11px] font-semibold tracking-widest uppercase text-black-main hover:opacity-60 transition-opacity cursor-pointer"
+                                onClick={() => onNavigate("profile")}
+                                className={`flex items-center gap-1.5 text-[11px] font-semibold tracking-widest uppercase text-black-main hover:opacity-60 transition-opacity cursor-pointer ${
+                                    currentRoute === "profile" ? "underline underline-offset-4 decoration-border-main" : ""
+                                }`}
                             >
                                 <User className="w-3.5 h-3.5" />
                                 {user.user_metadata?.full_name?.split(" ")[0] || "Account"}

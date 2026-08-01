@@ -8,6 +8,7 @@ import Fins from "./pages/fins";
 import Contact from "./pages/contact";
 import Login from "./pages/login";
 import Register from "./pages/register";
+import Profile from "./pages/profile";
 import heroImage from "./assets/hero.png";
 import type { Route } from "./types";
 import { CartProvider } from "./context/CartContext";
@@ -27,6 +28,7 @@ function App() {
             contact: "/contact",
             login: "/login",
             register: "/register",
+            profile: "/profile",
         };
         const targetPath = paths[route] || "/";
 
@@ -67,6 +69,7 @@ function App() {
                         <RouterRoute path="/contact" element={<Contact onNavigate={handleNavigate} />} />
                         <RouterRoute path="/login" element={<Login onNavigate={handleNavigate} />} />
                         <RouterRoute path="/register" element={<Register onNavigate={handleNavigate} />} />
+                        <RouterRoute path="/profile" element={<Profile onNavigate={handleNavigate} />} />
                         <RouterRoute path="*" element={<Home onNavigate={handleNavigate} />} />
                     </Routes>
 
