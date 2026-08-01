@@ -16,7 +16,11 @@ interface ProfileProps {
 interface ProfileData {
     id?: string;
     full_name: string;
-    avatar_url?: string;
+    cpf_cnpj?: string | null;
+    phone?: string | null;
+    avatar_url?: string | null;
+    role?: "bidder" | "creator" | "admin";
+    is_verified?: boolean;
     updated_at?: string;
 }
 
@@ -25,6 +29,12 @@ export const Profile: React.FC<ProfileProps> = ({ onNavigate }) => {
 
     const [fullName, setFullName] = useState("");
     const [email, setEmail] = useState("");
+    const [cpfCnpj, setCpfCnpj] = useState("");
+    const [phone, setPhone] = useState("");
+    const [avatarUrl, setAvatarUrl] = useState("");
+    const [role, setRole] = useState<"bidder" | "creator" | "admin">("bidder");
+    const [isVerified, setIsVerified] = useState(false);
+
     const [loading, setLoading] = useState(true);
     const [saving, setSaving] = useState(false);
     const [message, setMessage] = useState<{ type: "success" | "error"; text: string } | null>(null);
@@ -58,8 +68,13 @@ export const Profile: React.FC<ProfileProps> = ({ onNavigate }) => {
                     console.error("Error loading profile:", error);
                 }
 
-                if (data && data.full_name) {
-                    setFullName(data.full_name);
+                if (data) {
+                    if (data.full_name) setFullName(data.full_name);
+                    if (data.cpf_cnpj) setCpfCnpj(data.cpf_cnpj);
+                    if (data.phone) setPhone(data.phone);
+                    if (data.avatar_url) setAvatarUrl(data.avatar_url);
+                    if (data.role) setRole(data.role);
+                    if (typeof data.is_verified === "boolean") setIsVerified(data.is_verified);
                 } else if (user.user_metadata?.full_name) {
                     setFullName(user.user_metadata.full_name);
                 }
@@ -126,6 +141,9 @@ export const Profile: React.FC<ProfileProps> = ({ onNavigate }) => {
             const profilePayload: ProfileData = {
                 id: user.id,
                 full_name: fullName,
+                cpf_cnpj: cpfCnpj || null,
+                phone: phone || null,
+                avatar_url: avatarUrl || null,
                 updated_at: new Date().toISOString(),
             };
 
@@ -134,11 +152,10 @@ export const Profile: React.FC<ProfileProps> = ({ onNavigate }) => {
                 .upsert(profilePayload);
 
             if (profileError) {
-                // If table doesn't exist yet, user metadata is still saved
                 console.warn("Could not upsert into 'profiles' table, updated auth metadata instead:", profileError);
             }
 
-            setMessage({ type: "success", text: "Profile updated successfully!" });
+            setMessage({ type: "success", text: "Perfil atualizado com sucesso!" });
 
             // Pulse animation on success
             if (formRef.current) {
@@ -151,7 +168,7 @@ export const Profile: React.FC<ProfileProps> = ({ onNavigate }) => {
         } catch (err: any) {
             setMessage({
                 type: "error",
-                text: err?.message || "Failed to update profile. Please try again.",
+                text: err?.message || "Falha ao atualizar o perfil. Tente novamente.",
             });
         } finally {
             setSaving(false);
@@ -164,7 +181,7 @@ export const Profile: React.FC<ProfileProps> = ({ onNavigate }) => {
                 <div className="flex flex-col items-center gap-3">
                     <div className="w-8 h-8 border-2 border-black-main border-t-transparent rounded-full animate-spin" />
                     <span className="text-xs font-bold tracking-widest uppercase text-gray-sec">
-                        Loading Profile...
+                        Carregando Perfil...
                     </span>
                 </div>
             </div>
@@ -195,13 +212,13 @@ export const Profile: React.FC<ProfileProps> = ({ onNavigate }) => {
                     {/* Header */}
                     <div className="profile-fade-up text-center mb-10">
                         <span className="text-[10px] font-bold tracking-[0.25em] uppercase text-gray-sec">
-                            ACCOUNT SETTINGS
+                            CONFIGURAÇÕES DA CONTA
                         </span>
                         <h1 className="text-3xl sm:text-4xl font-display font-black tracking-tight text-black-main mt-2">
-                            YOUR PROFILE
+                            SEU PERFIL
                         </h1>
                         <p className="text-xs text-gray-sec mt-2 leading-relaxed max-w-md mx-auto">
-                            Manage your personal details and account settings across Runner Space
+                            Gerencie seus dados pessoais e preferências na plataforma
                         </p>
                     </div>
 
@@ -209,17 +226,35 @@ export const Profile: React.FC<ProfileProps> = ({ onNavigate }) => {
                     <div className="profile-card bg-card-bg border border-border-main rounded-2xl p-8 sm:p-10 shadow-[0_8px_40px_rgba(0,0,0,0.04)]">
                         {/* Avatar Header Badge */}
                         <div className="flex items-center gap-4 pb-8 mb-8 border-b border-border-main">
-                            <div className="w-16 h-16 rounded-full bg-black-main text-ivory flex items-center justify-center text-xl font-display font-bold">
-                                {fullName ? fullName.charAt(0).toUpperCase() : user?.email?.charAt(0).toUpperCase() || "U"}
-                            </div>
+                            {avatarUrl ? (
+                                <img
+                                    src={avatarUrl}
+                                    alt="Avatar"
+                                    className="w-16 h-16 rounded-full object-cover border border-border-main"
+                                />
+                            ) : (
+                                <div className="w-16 h-16 rounded-full bg-black-main text-ivory flex items-center justify-center text-xl font-display font-bold">
+                                    {fullName ? fullName.charAt(0).toUpperCase() : user?.email?.charAt(0).toUpperCase() || "U"}
+                                </div>
+                            )}
                             <div>
                                 <h2 className="text-lg font-bold text-black-main leading-tight">
-                                    {fullName || "User Profile"}
+                                    {fullName || "Usuário"}
                                 </h2>
                                 <p className="text-xs text-gray-sec mt-0.5">{email}</p>
-                                <span className="inline-flex items-center gap-1 mt-2 text-[9px] font-bold tracking-wider uppercase text-emerald-600 bg-emerald-50 border border-emerald-200 px-2 py-0.5 rounded-full">
-                                    <Shield className="w-2.5 h-2.5" /> Verified User
-                                </span>
+                                <div className="flex items-center gap-2 mt-2">
+                                    <span className={`inline-flex items-center gap-1 text-[9px] font-bold tracking-wider uppercase px-2 py-0.5 rounded-full border ${
+                                        isVerified
+                                            ? "text-emerald-600 bg-emerald-50 border-emerald-200"
+                                            : "text-amber-600 bg-amber-50 border-amber-200"
+                                    }`}>
+                                        <Shield className="w-2.5 h-2.5" />
+                                        {isVerified ? "Verificado" : "Não verificado"}
+                                    </span>
+                                    <span className="inline-flex items-center text-[9px] font-bold tracking-wider uppercase px-2 py-0.5 rounded-full border bg-gray-100 border-gray-200 text-gray-700">
+                                        Role: {role}
+                                    </span>
+                                </div>
                             </div>
                         </div>
 
@@ -249,7 +284,7 @@ export const Profile: React.FC<ProfileProps> = ({ onNavigate }) => {
                                     htmlFor="profile-fullname"
                                     className="text-[10px] font-bold uppercase tracking-wider text-gray-sec"
                                 >
-                                    Full Name
+                                    Nome Completo
                                 </label>
                                 <div className="relative">
                                     <User className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-sec/50" />
@@ -257,7 +292,7 @@ export const Profile: React.FC<ProfileProps> = ({ onNavigate }) => {
                                         id="profile-fullname"
                                         type="text"
                                         required
-                                        placeholder="Your full name"
+                                        placeholder="Seu nome completo"
                                         value={fullName}
                                         onChange={(e) => setFullName(e.target.value)}
                                         className="w-full pl-10 pr-4 py-3 bg-ivory border border-border-main rounded-md text-sm text-black-main placeholder-gray-sec/50 outline-none focus:border-black-main transition-colors"
@@ -271,8 +306,8 @@ export const Profile: React.FC<ProfileProps> = ({ onNavigate }) => {
                                     htmlFor="profile-email"
                                     className="text-[10px] font-bold uppercase tracking-wider text-gray-sec flex items-center justify-between"
                                 >
-                                    <span>Email Address</span>
-                                    <span className="text-[9px] text-gray-sec/70 font-normal">Managed by Auth</span>
+                                    <span>E-mail</span>
+                                    <span className="text-[9px] text-gray-sec/70 font-normal">Gerenciado pela Auth</span>
                                 </label>
                                 <div className="relative">
                                     <Mail className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-sec/50" />
@@ -284,6 +319,60 @@ export const Profile: React.FC<ProfileProps> = ({ onNavigate }) => {
                                         className="w-full pl-10 pr-4 py-3 bg-ivory/60 border border-border-main/60 rounded-md text-sm text-gray-sec cursor-not-allowed outline-none"
                                     />
                                 </div>
+                            </div>
+
+                            {/* CPF/CNPJ Input */}
+                            <div className="flex flex-col gap-1.5">
+                                <label
+                                    htmlFor="profile-cpf-cnpj"
+                                    className="text-[10px] font-bold uppercase tracking-wider text-gray-sec"
+                                >
+                                    CPF / CNPJ
+                                </label>
+                                <input
+                                    id="profile-cpf-cnpj"
+                                    type="text"
+                                    placeholder="000.000.000-00 ou 00.000.000/0001-00"
+                                    value={cpfCnpj}
+                                    onChange={(e) => setCpfCnpj(e.target.value)}
+                                    className="w-full px-4 py-3 bg-ivory border border-border-main rounded-md text-sm text-black-main placeholder-gray-sec/50 outline-none focus:border-black-main transition-colors"
+                                />
+                            </div>
+
+                            {/* Phone Input */}
+                            <div className="flex flex-col gap-1.5">
+                                <label
+                                    htmlFor="profile-phone"
+                                    className="text-[10px] font-bold uppercase tracking-wider text-gray-sec"
+                                >
+                                    Telefone / WhatsApp
+                                </label>
+                                <input
+                                    id="profile-phone"
+                                    type="tel"
+                                    placeholder="(00) 00000-0000"
+                                    value={phone}
+                                    onChange={(e) => setPhone(e.target.value)}
+                                    className="w-full px-4 py-3 bg-ivory border border-border-main rounded-md text-sm text-black-main placeholder-gray-sec/50 outline-none focus:border-black-main transition-colors"
+                                />
+                            </div>
+
+                            {/* Avatar URL Input */}
+                            <div className="flex flex-col gap-1.5">
+                                <label
+                                    htmlFor="profile-avatar-url"
+                                    className="text-[10px] font-bold uppercase tracking-wider text-gray-sec"
+                                >
+                                    URL do Avatar
+                                </label>
+                                <input
+                                    id="profile-avatar-url"
+                                    type="url"
+                                    placeholder="https://exemplo.com/avatar.jpg"
+                                    value={avatarUrl}
+                                    onChange={(e) => setAvatarUrl(e.target.value)}
+                                    className="w-full px-4 py-3 bg-ivory border border-border-main rounded-md text-sm text-black-main placeholder-gray-sec/50 outline-none focus:border-black-main transition-colors"
+                                />
                             </div>
 
                             {/* Actions */}
@@ -298,11 +387,11 @@ export const Profile: React.FC<ProfileProps> = ({ onNavigate }) => {
                                     {saving ? (
                                         <>
                                             <span className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" />
-                                            Saving...
+                                            Salvando...
                                         </>
                                     ) : (
                                         <>
-                                            <Save className="w-4 h-4" /> Save Changes
+                                            <Save className="w-4 h-4" /> Salvar Alterações
                                         </>
                                     )}
                                 </Button>
@@ -315,7 +404,7 @@ export const Profile: React.FC<ProfileProps> = ({ onNavigate }) => {
                                     }}
                                     className="w-full sm:w-auto px-6 py-4 text-[11px] font-bold tracking-widest uppercase rounded-md border border-red-200 text-red-600 hover:bg-red-50 transition-colors cursor-pointer flex items-center justify-center gap-2"
                                 >
-                                    <LogOut className="w-4 h-4" /> Sign Out
+                                    <LogOut className="w-4 h-4" /> Sair
                                 </button>
                             </div>
                         </form>
@@ -324,7 +413,7 @@ export const Profile: React.FC<ProfileProps> = ({ onNavigate }) => {
                     {/* Footer branding */}
                     <div className="text-center mt-8">
                         <span className="text-[9px] font-bold tracking-[0.2em] uppercase text-gray-sec/50">
-                            Runner Space · User Account Management
+                            Runner Space · Gestão de Perfil de Usuário
                         </span>
                     </div>
                 </div>
