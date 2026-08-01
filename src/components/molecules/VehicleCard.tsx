@@ -59,14 +59,14 @@ export const VehicleCard: React.FC<VehicleCardProps> = ({
     return (
         <div 
             onClick={() => onSelect && onSelect(auction.id)}
-            className="group relative bg-neutral-900 border border-neutral-800 hover:border-neutral-700 rounded-2xl overflow-hidden shadow-xl transition-all duration-300 hover:-translate-y-1 cursor-pointer flex flex-col justify-between"
+            className="showcase-card anim-stagger group relative bg-card-bg border border-border-main rounded-2xl overflow-hidden flex flex-col justify-between transition-all duration-500 hover:shadow-xl hover:border-black-main cursor-pointer"
         >
             {/* Header / Imagem */}
-            <div className="relative aspect-[16/10] w-full overflow-hidden bg-neutral-950">
+            <div className="relative aspect-[16/10] w-full overflow-hidden bg-card-bg">
                 <img
                     src={coverImage}
                     alt={`${vehicle?.brand} ${vehicle?.model}`}
-                    className="w-full h-full object-cover object-center group-hover:scale-105 transition-transform duration-500"
+                    className="w-full h-full object-cover object-center group-hover:scale-105 transition-transform duration-700 grayscale group-hover:grayscale-0"
                 />
 
                 {/* Overlays / Badges */}
@@ -110,9 +110,9 @@ export const VehicleCard: React.FC<VehicleCardProps> = ({
                 )}
 
                 {/* Timer Badge (Footer da imagem) */}
-                <div className="absolute bottom-3 left-3 right-3 flex items-center justify-between px-3 py-1.5 rounded-lg bg-black/60 backdrop-blur-md border border-white/10 text-xs text-neutral-200">
-                    <span className="font-medium text-neutral-400">Tempo restante:</span>
-                    <span className={`font-mono font-bold ${isLive ? "text-emerald-400" : "text-neutral-300"}`}>
+                <div className="absolute bottom-3 left-3 right-3 flex items-center justify-between px-3 py-1.5 rounded-lg bg-black/60 backdrop-blur-md border border-white/10 text-[10px] text-white">
+                    <span className="font-medium">Tempo restante:</span>
+                    <span className={`font-mono font-bold ${isLive ? "text-emerald-400" : "text-gray-300"}`}>
                         {timeLeft}
                     </span>
                 </div>
@@ -121,35 +121,35 @@ export const VehicleCard: React.FC<VehicleCardProps> = ({
             {/* Conteúdo do Card */}
             <div className="p-5 flex flex-col flex-1 justify-between gap-4">
                 <div>
-                    <div className="flex items-center justify-between text-xs text-neutral-400 mb-1">
-                        <span className="font-semibold uppercase tracking-wider text-amber-500">{vehicle?.brand}</span>
+                    <div className="flex items-center justify-between text-[10px] font-bold tracking-widest uppercase text-gray-sec mb-1">
+                        <span>{vehicle?.brand}</span>
                         <span>{vehicle?.year_manufacture}{vehicle?.year_model ? `/${vehicle.year_model}` : ''}</span>
                     </div>
 
-                    <h3 className="text-xl font-bold text-white tracking-tight group-hover:text-amber-400 transition-colors line-clamp-1">
+                    <h3 className="text-xl font-extrabold text-black-main font-display uppercase tracking-tight line-clamp-1">
                         {vehicle?.model}
                     </h3>
 
-                    <p className="text-xs text-neutral-400 mt-1 line-clamp-1">
+                    <p className="text-xs text-gray-sec mt-1 line-clamp-1">
                         {vehicle?.mileage ? `${vehicle.mileage.toLocaleString('pt-BR')} km` : '0 km'} • {vehicle?.color || 'Cor N/I'} • {vehicle?.condition?.toUpperCase()}
                     </p>
                 </div>
 
                 {/* Preços e Ação */}
-                <div className="pt-3 border-t border-neutral-800 flex items-end justify-between">
+                <div className="pt-4 mt-2 border-t border-border-main flex items-end justify-between">
                     <div>
-                        <span className="block text-[10px] uppercase font-medium text-neutral-400">
-                            {current_price ? "Lance Atual" : "Lance Inicial"}
+                        <span className="block text-[9px] font-bold tracking-widest text-gray-sec uppercase mb-1">
+                            {current_price ? "Lance Atual" : "LANCE INICIAL"}
                         </span>
-                        <div className="text-xl font-black text-emerald-400 font-mono">
+                        <div className="text-xl font-bold text-black-main">
                             R$ {displayPrice.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}
                         </div>
                     </div>
 
                     <button 
-                        className="px-4 py-2 text-xs font-bold uppercase tracking-wider rounded-lg bg-amber-500 hover:bg-amber-400 text-black transition-colors shadow-lg shadow-amber-500/10"
+                        className="px-4 py-2 text-xs font-bold uppercase tracking-wider rounded-lg border border-black-main text-black-main hover:bg-black-main hover:text-white transition-colors"
                     >
-                        Dar Lance
+                        Participar
                     </button>
                 </div>
             </div>

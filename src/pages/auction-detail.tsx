@@ -5,11 +5,11 @@ import PageLayout from "../components/templates/PageLayout";
 import { usePageAnimations } from "../hooks/usePageAnimations";
 import { AuctionDetailSkeletonLoader, AuctionErrorState } from "../components/molecules/AuctionLoaders";
 import Button from "../components/atoms/Button";
+import FloatingPill from "../components/atoms/FloatingPill";
 import type { Auction, Bid, Route } from "../types";
 import { ArrowLeft } from "lucide-react";
 
 interface AuctionDetailProps {
-    auctionId: string;
     onNavigate: (route: Route) => void;
 }
 
@@ -136,163 +136,153 @@ export const AuctionDetail: React.FC<AuctionDetailProps> = ({ auctionId, onNavig
 
     return (
         <PageLayout onNavigate={onNavigate} currentRoute="auction-detail">
-            <div ref={pageRef} className="w-full relative flex-1 px-6 py-12 md:py-20 flex justify-center">
-                {loading ? (
-                    <div className="w-full max-w-6xl anim-fade-up"><AuctionDetailSkeletonLoader /></div>
-                ) : fetchError || !auction || !vehicle ? (
-                    <div className="w-full max-w-4xl anim-fade-up">
-                        <AuctionErrorState
-                            title="Leilão não encontrado"
-                            message={fetchError || "O leilão requisitado não existe ou foi desativado."}
-                            onRetry={fetchAuctionData}
-                            onBack={() => onNavigate("auctions")}
+            <section ref={pageRef} className="relative w-full overflow-hidden">
+                {/* ---------- WORDMARK + PRODUCT IMAGE ---------- */}
+                <div className="relative flex items-center justify-center px-4 min-h-[280px] sm:min-h-[380px] lg:min-h-[460px]">
+                    {/* Decorative floating pills */}
+                    <FloatingPill className="left-[8%] top-[18%] w-10 h-6 sm:w-14 sm:h-8 rotate-[-20deg] floating-pill" />
+                    <FloatingPill className="left-[20%] top-[8%] w-7 h-4 sm:w-10 sm:h-6 rotate-[15deg] blur-[1px] floating-pill" />
+                    <FloatingPill className="right-[10%] top-[12%] w-10 h-6 sm:w-14 sm:h-8 rotate-[25deg] floating-pill" />
+                    <FloatingPill className="right-[22%] bottom-[15%] w-8 h-5 sm:w-11 sm:h-7 rotate-[-10deg] blur-[1px] floating-pill" />
+
+                    {/* Wordmark */}
+                    <h1
+                        className="select-none text-[20vw] sm:text-[16vw] lg:text-[11vw] leading-[0.8] text-black-main whitespace-nowrap font-display uppercase anim-title absolute z-0 opacity-[0.03]"
+                        style={{ letterSpacing: "-0.03em" }}
+                    >
+                        {vehicle.brand}
+                    </h1>
+
+                    {/* Product image, centered on top of the wordmark */}
+                    <div className="relative z-10 w-[70%] sm:w-[50%] lg:w-[40%] aspect-[16/9] flex items-center justify-center anim-fade-up">
+                        <img
+                            src={coverImage}
+                            alt={vehicle.model}
+                            className="w-full h-full object-cover rounded-xl shadow-2xl drop-shadow-[0_15px_25px_rgba(0,0,0,0.15)] grayscale hover:grayscale-0 transition-all duration-700"
                         />
                     </div>
-                ) : (
-                    <div className="w-full max-w-7xl space-y-12">
-                        {/* Header Navegação */}
-                        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-6 border-b border-border-main pb-8 anim-fade-up">
+                </div>
+
+                {/* ---------- PRODUCT INFO BAR ---------- */}
+                <div className="relative z-20 px-6 sm:px-10 lg:px-14 pb-10 sm:pb-14 max-w-7xl mx-auto">
+                    <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-8">
+                        <Button
+                            variant="outline"
+                            onClick={() => onNavigate("auctions")}
+                            className="flex items-center gap-2 self-start px-4 py-2 text-xs"
+                        >
+                            <ArrowLeft className="w-3.5 h-3.5" /> Voltar
+                        </Button>
+                    </div>
+
+                    <div className="flex flex-col lg:flex-row gap-8 lg:gap-12">
+                        {/* Title block & Specs */}
+                        <div className="flex-1 flex flex-col gap-6">
                             <div>
-                                <span className="text-xs uppercase font-bold text-gray-sec tracking-widest">{vehicle.brand}</span>
-                                <h1 className="text-4xl md:text-5xl font-black text-black-main font-display mt-1 uppercase tracking-tight">{vehicle.model}</h1>
+                                <p className="text-[10px] sm:text-[11px] font-bold tracking-widest uppercase text-gray-sec">
+                                    {vehicle.brand}
+                                </p>
+                                <h2 className="text-3xl sm:text-5xl font-black text-black-main font-display leading-none uppercase tracking-tight">
+                                    {vehicle.model}
+                                </h2>
+                                <p className="text-sm sm:text-base text-gray-sec mt-2 max-w-lg leading-relaxed">
+                                    {vehicle.description || `Lote exclusivo ${vehicle.brand} ${vehicle.model}. Condição: ${vehicle.condition}.`}
+                                </p>
                             </div>
-                            <Button
-                                variant="outline"
-                                onClick={() => onNavigate("auctions")}
-                                className="flex items-center gap-2 self-start sm:self-auto"
-                            >
-                                <ArrowLeft className="w-4 h-4" /> Voltar aos Leilões
-                            </Button>
+
+                            <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 py-6 border-y border-border-main">
+                                <div>
+                                    <span className="block text-[9px] font-bold tracking-widest text-gray-sec uppercase mb-1">Ano</span>
+                                    <span className="font-semibold text-black-main">{vehicle.year_manufacture}/{vehicle.year_model || vehicle.year_manufacture}</span>
+                                </div>
+                                <div>
+                                    <span className="block text-[9px] font-bold tracking-widest text-gray-sec uppercase mb-1">KM</span>
+                                    <span className="font-semibold text-black-main">{vehicle.mileage.toLocaleString('pt-BR')}</span>
+                                </div>
+                                <div>
+                                    <span className="block text-[9px] font-bold tracking-widest text-gray-sec uppercase mb-1">Cor</span>
+                                    <span className="font-semibold text-black-main capitalize">{vehicle.color || "N/I"}</span>
+                                </div>
+                                <div>
+                                    <span className="block text-[9px] font-bold tracking-widest text-gray-sec uppercase mb-1">Condição</span>
+                                    <span className="font-semibold text-black-main capitalize">{vehicle.condition}</span>
+                                </div>
+                            </div>
                         </div>
 
-                        <div className="grid grid-cols-1 lg:grid-cols-3 gap-10">
-                            {/* Coluna Principal: Galeria & Detalhes do Veículo */}
-                            <div className="lg:col-span-2 space-y-10">
-                                <div className="relative aspect-[16/9] w-full rounded-2xl overflow-hidden bg-card-bg border border-border-main shadow-lg anim-stagger group">
-                                    <img
-                                        src={coverImage}
-                                        alt={vehicle.model}
-                                        className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
-                                    />
-                                    <div className="absolute inset-0 bg-gradient-to-t from-black/50 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none"></div>
+                        {/* Bidding Block */}
+                        <div className="w-full lg:w-[400px] shrink-0">
+                            <div className="bg-card-bg border border-border-main rounded-xl p-6 shadow-xl">
+                                <div className="mb-6 pb-6 border-b border-border-main">
+                                    <p className="text-[10px] font-bold tracking-widest uppercase text-gray-sec mb-1">
+                                        Lance Atual
+                                    </p>
+                                    <p className="text-4xl font-black text-black-main font-display tracking-tight">
+                                        R$ {(auction.current_price || vehicle.starting_price).toLocaleString('pt-BR', { minimumFractionDigits: 2 })}
+                                    </p>
+                                    <span className="text-[10px] font-medium text-gray-sec mt-1 block">
+                                        Incremento mínimo: R$ {auction.min_increment.toLocaleString('pt-BR')}
+                                    </span>
                                 </div>
 
-                                {/* Detalhes Técnicos */}
-                                <div className="showcase-card anim-stagger bg-card-bg border border-border-main rounded-2xl p-8 shadow-sm">
-                                    <h2 className="text-lg font-black text-black-main font-display uppercase tracking-wider border-b border-border-main pb-4 mb-6">Especificações do Veículo</h2>
-
-                                    <div className="grid grid-cols-2 md:grid-cols-4 gap-6 text-sm">
-                                        <div>
-                                            <span className="block text-xs font-bold tracking-widest text-gray-sec uppercase mb-1">Ano</span>
-                                            <span className="font-semibold text-black-main text-lg">{vehicle.year_manufacture}/{vehicle.year_model || vehicle.year_manufacture}</span>
-                                        </div>
-                                        <div>
-                                            <span className="block text-xs font-bold tracking-widest text-gray-sec uppercase mb-1">KM</span>
-                                            <span className="font-semibold text-black-main text-lg">{vehicle.mileage.toLocaleString('pt-BR')}</span>
-                                        </div>
-                                        <div>
-                                            <span className="block text-xs font-bold tracking-widest text-gray-sec uppercase mb-1">Cor</span>
-                                            <span className="font-semibold text-black-main text-lg capitalize">{vehicle.color || "N/I"}</span>
-                                        </div>
-                                        <div>
-                                            <span className="block text-xs font-bold tracking-widest text-gray-sec uppercase mb-1">Condição</span>
-                                            <span className="font-semibold text-black-main text-lg capitalize">{vehicle.condition}</span>
-                                        </div>
+                                {message && (
+                                    <div className={`p-4 rounded-lg text-xs font-bold mb-6 ${message.type === "success" ? "bg-green-50 text-green-700 border border-green-200" : "bg-red-50 text-red-700 border border-red-200"}`}>
+                                        {message.text}
                                     </div>
+                                )}
 
-                                    {vehicle.description && (
-                                        <div className="pt-6 mt-6 border-t border-border-main">
-                                            <span className="block text-xs font-bold tracking-widest text-gray-sec uppercase mb-2">Descrição</span>
-                                            <p className="text-gray-sec text-sm leading-relaxed">{vehicle.description}</p>
+                                {auction.status === "ativo" ? (
+                                    <form onSubmit={handlePlaceBid} className="space-y-4">
+                                        <div>
+                                            <label className="block text-[9px] font-bold tracking-widest text-gray-sec uppercase mb-2">Seu Lance (R$)</label>
+                                            <input
+                                                type="number"
+                                                min={minAllowed}
+                                                step={auction.min_increment}
+                                                value={bidAmount}
+                                                onChange={(e) => setBidAmount(e.target.value)}
+                                                className="w-full bg-white border border-border-main rounded-md px-4 py-3 text-black-main font-bold focus:border-black-main focus:outline-none transition-colors"
+                                            />
                                         </div>
-                                    )}
-                                </div>
+                                        <Button
+                                            type="submit"
+                                            variant="primary"
+                                            disabled={bidding}
+                                            className="w-full py-4 uppercase tracking-wider text-xs font-bold justify-center"
+                                        >
+                                            {bidding ? "Processando..." : "Confirmar Lance"}
+                                        </Button>
+                                    </form>
+                                ) : (
+                                    <div className="p-4 rounded-md bg-gray-100 border border-border-main text-center text-gray-sec text-[10px] font-bold uppercase tracking-widest">
+                                        Leilão {auction.status}
+                                    </div>
+                                )}
                             </div>
 
-                            {/* Coluna Lateral: Lances & Realtime */}
-                            <div className="space-y-8">
-                                {/* Painel do Lance Atual */}
-                                <div className="showcase-card anim-stagger bg-card-bg border border-border-main rounded-2xl p-8 shadow-xl relative overflow-hidden">
-                                    <div className="absolute top-0 right-0 w-32 h-32 bg-radial from-black-main/5 to-transparent rounded-full blur-xl pointer-events-none"></div>
-
-                                    <div className="relative z-10 mb-8">
-                                        <span className="text-xs font-bold tracking-widest text-gray-sec uppercase">Lance Atual</span>
-                                        <div className="text-4xl md:text-5xl font-black text-black-main font-display mt-2 tracking-tighter">
-                                            R$ {(auction.current_price || vehicle.starting_price).toLocaleString('pt-BR', { minimumFractionDigits: 2 })}
-                                        </div>
-                                        <span className="text-xs font-medium text-gray-sec mt-2 block">
-                                            Incremento mínimo: R$ {auction.min_increment.toLocaleString('pt-BR')}
-                                        </span>
-                                    </div>
-
-                                    {message && (
-                                        <div className={`p-4 rounded-xl text-sm font-medium mb-6 relative z-10 ${message.type === "success" ? "bg-green-50 text-green-700 border border-green-200" : "bg-red-50 text-red-700 border border-red-200"}`}>
-                                            {message.text}
-                                        </div>
-                                    )}
-
-                                    {/* Form de Lance */}
-                                    {auction.status === "ativo" ? (
-                                        <form onSubmit={handlePlaceBid} className="space-y-6 relative z-10">
-                                            <div>
-                                                <label className="block text-xs font-bold tracking-widest text-gray-sec uppercase mb-2">Seu Lance (R$)</label>
-                                                <input
-                                                    type="number"
-                                                    min={minAllowed}
-                                                    step={auction.min_increment}
-                                                    value={bidAmount}
-                                                    onChange={(e) => setBidAmount(e.target.value)}
-                                                    className="w-full bg-white border border-border-main rounded-xl px-4 py-4 text-black-main font-mono font-bold text-xl focus:border-black-main focus:outline-none transition-colors shadow-inner"
-                                                />
-                                                <span className="text-[10px] text-gray-sec mt-2 block">Mínimo sugerido: R$ {minAllowed.toLocaleString('pt-BR')}</span>
-                                            </div>
-
-                                            <Button
-                                                type="submit"
-                                                variant="primary"
-                                                disabled={bidding}
-                                                className="w-full py-4 text-center justify-center text-sm"
-                                            >
-                                                {bidding ? "Processando..." : "Confirmar Lance"}
-                                            </Button>
-                                        </form>
+                            {/* Histórico */}
+                            <div className="mt-6">
+                                <h3 className="text-[10px] font-bold text-gray-sec uppercase tracking-widest mb-4">Histórico de Lances ({bids.length})</h3>
+                                <div className="space-y-2 max-h-48 overflow-y-auto pr-2 custom-scrollbar">
+                                    {bids.length === 0 ? (
+                                        <p className="text-xs text-gray-sec py-2">Seja o primeiro a dar um lance.</p>
                                     ) : (
-                                        <div className="p-4 rounded-xl bg-gray-100 border border-border-main text-center text-gray-sec text-xs font-bold uppercase tracking-widest relative z-10">
-                                            Leilão {auction.status}
-                                        </div>
+                                        bids.map((bid, index) => (
+                                            <div
+                                                key={bid.id}
+                                                className={`p-3 rounded-lg flex items-center justify-between text-xs transition-all ${index === 0 ? "bg-black-main text-white font-bold" : "bg-white border border-border-main text-black-main"}`}
+                                            >
+                                                <span>{bid.bidder?.full_name || "Licitante"}</span>
+                                                <span className="font-mono">R$ {bid.amount.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}</span>
+                                            </div>
+                                        ))
                                     )}
-                                </div>
-
-                                {/* Histórico de Lances */}
-                                <div className="showcase-card anim-stagger bg-card-bg border border-border-main rounded-2xl p-8 shadow-sm">
-                                    <h3 className="text-sm font-black text-black-main font-display uppercase tracking-widest border-b border-border-main pb-4 mb-4">Histórico de Lances ({bids.length})</h3>
-
-                                    <div className="space-y-3 max-h-72 overflow-y-auto pr-2 custom-scrollbar">
-                                        {bids.length === 0 ? (
-                                            <p className="text-sm text-gray-sec text-center py-6">Seja o primeiro a dar um lance.</p>
-                                        ) : (
-                                            bids.map((bid, index) => (
-                                                <div
-                                                    key={bid.id}
-                                                    className={`p-4 rounded-xl flex items-center justify-between text-sm transition-all ${index === 0 ? "bg-black-main text-white shadow-md transform scale-[1.02]" : "bg-white border border-border-main text-black-main"}`}
-                                                >
-                                                    <div>
-                                                        <span className="font-bold block text-xs uppercase tracking-wider">{bid.bidder?.full_name || "Licitante"}</span>
-                                                        <span className={`text-[10px] ${index === 0 ? "text-gray-300" : "text-gray-sec"}`}>{new Date(bid.created_at).toLocaleTimeString('pt-BR')}</span>
-                                                    </div>
-                                                    <div className="font-mono font-black text-base tracking-tighter">
-                                                        R$ {bid.amount.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}
-                                                    </div>
-                                                </div>
-                                            ))
-                                        )}
-                                    </div>
                                 </div>
                             </div>
                         </div>
                     </div>
-                )}
-            </div>
+                </div>
+            </section>
         </PageLayout>
     );
 };
