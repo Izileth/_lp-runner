@@ -1,5 +1,5 @@
 import { useRef } from "react";
-import { Routes, Route as RouterRoute, useNavigate, useLocation } from "react-router-dom";
+import { Routes, Route as RouterRoute, useNavigate, useLocation, useParams } from "react-router-dom";
 import gsap from "gsap";
 import Home from "./pages/home";
 import HeroYeezy from "./pages/product";
@@ -9,17 +9,25 @@ import Contact from "./pages/contact";
 import Login from "./pages/login";
 import Register from "./pages/register";
 import Profile from "./pages/profile";
+import { Auctions } from "./pages/auctions";
+import { CreateAuction } from "./pages/create-auction";
+import { AuctionDetail } from "./pages/auction-detail";
 import heroImage from "./assets/hero.png";
 import type { Route } from "./types";
 import { CartProvider } from "./context/CartContext";
 import { AuthProvider } from "./context/AuthContext";
+
+function AuctionDetailWrapper({ onNavigate }: { onNavigate: (route: Route, itemId?: string) => void }) {
+    const { id } = useParams<{ id: string }>();
+    return <AuctionDetail auctionId={id || ""} onNavigate={onNavigate} />;
+}
 
 function App() {
     const navigate = useNavigate();
     const location = useLocation();
     const overlayRef = useRef<HTMLDivElement>(null);
 
-    const handleNavigate = (route: Route) => {
+    const handleNavigate = (route: Route, itemId?: string) => {
         const paths: Record<Route, string> = {
             home: "/",
             product: "/product",
@@ -29,6 +37,9 @@ function App() {
             login: "/login",
             register: "/register",
             profile: "/profile",
+            auctions: "/auctions",
+            "create-auction": "/auctions/create",
+            "auction-detail": itemId ? `/auctions/${itemId}` : "/auctions",
         };
         const targetPath = paths[route] || "/";
 
@@ -70,6 +81,9 @@ function App() {
                         <RouterRoute path="/login" element={<Login onNavigate={handleNavigate} />} />
                         <RouterRoute path="/register" element={<Register onNavigate={handleNavigate} />} />
                         <RouterRoute path="/profile" element={<Profile onNavigate={handleNavigate} />} />
+                        <RouterRoute path="/auctions" element={<Auctions onNavigate={handleNavigate} />} />
+                        <RouterRoute path="/auctions/create" element={<CreateAuction onNavigate={handleNavigate} />} />
+                        <RouterRoute path="/auctions/:id" element={<AuctionDetailWrapper onNavigate={handleNavigate} />} />
                         <RouterRoute path="*" element={<Home onNavigate={handleNavigate} />} />
                     </Routes>
 
