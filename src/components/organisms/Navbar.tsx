@@ -94,6 +94,16 @@ export const Navbar: React.FC<NavbarProps> = ({ onNavigate, currentRoute }) => {
                     >
                         Fins
                     </button>
+                    <span className="text-border-main">/</span>
+                    <button
+                        onClick={() => onNavigate("auctions")}
+                        className={`hover:opacity-60 transition-opacity cursor-pointer ${
+                            currentRoute === "auctions" || currentRoute === "create-auction" || currentRoute === "auction-detail" ? "underline underline-offset-4 decoration-border-main" : ""
+                        }`}
+                    >
+                        Leilões
+                    </button>
+                    <span className="text-border-main">/</span>
                     <button
                         onClick={() => onNavigate("about")}
                         className={`hover:opacity-60 transition-opacity cursor-pointer ${
@@ -102,6 +112,7 @@ export const Navbar: React.FC<NavbarProps> = ({ onNavigate, currentRoute }) => {
                     >
                         About
                     </button>
+                    <span className="text-border-main">/</span>
                     <button
                         onClick={() => onNavigate("contact")}
                         className={`hover:opacity-60 transition-opacity cursor-pointer ${
@@ -202,6 +213,12 @@ export const Navbar: React.FC<NavbarProps> = ({ onNavigate, currentRoute }) => {
                         className="mobile-nav-link text-left text-4xl sm:text-5xl font-bold tracking-tighter uppercase font-display cursor-pointer hover:text-gray-sec transition-colors"
                     >
                         Explore Fins
+                    </button>
+                    <button
+                        onClick={() => handleMobileLinkClick("auctions")}
+                        className="mobile-nav-link text-left text-4xl sm:text-5xl font-bold tracking-tighter uppercase font-display cursor-pointer hover:text-gray-sec transition-colors"
+                    >
+                        Leilões
                     </button>
                     <button
                         onClick={() => handleMobileLinkClick("about")}

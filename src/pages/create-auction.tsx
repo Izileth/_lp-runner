@@ -1,7 +1,9 @@
 import React, { useState } from "react";
 import { supabase } from "../lib/supabase";
 import { useAuth } from "../context/AuthContext";
+import PageLayout from "../components/templates/PageLayout";
 import type { Route } from "../types";
+import { ArrowLeft } from "lucide-react";
 
 interface CreateAuctionProps {
     onNavigate: (route: Route) => void;
@@ -109,20 +111,21 @@ export const CreateAuction: React.FC<CreateAuctionProps> = ({ onNavigate }) => {
     };
 
     return (
-        <div className="min-h-screen bg-black text-white p-6 md:p-12 font-sans">
-            <div className="max-w-3xl mx-auto bg-neutral-900 border border-neutral-800 rounded-3xl p-8 shadow-2xl">
-                <div className="flex items-center justify-between mb-8 border-b border-neutral-800 pb-6">
-                    <div>
-                        <h1 className="text-3xl font-black tracking-tight text-white">Criar Novo Leilão</h1>
-                        <p className="text-neutral-400 text-sm mt-1">Cadastre seu veículo e defina as regras do leilão.</p>
+        <PageLayout onNavigate={onNavigate} currentRoute="create-auction">
+            <div className="w-full bg-black text-white min-h-[calc(100vh-140px)] p-6 md:p-12 font-sans">
+                <div className="max-w-3xl mx-auto bg-neutral-900 border border-neutral-800 rounded-3xl p-8 shadow-2xl">
+                    <div className="flex items-center justify-between mb-8 border-b border-neutral-800 pb-6">
+                        <div>
+                            <h1 className="text-3xl font-black tracking-tight text-white">Criar Novo Leilão</h1>
+                            <p className="text-neutral-400 text-sm mt-1">Cadastre seu veículo e defina as regras do leilão.</p>
+                        </div>
+                        <button
+                            onClick={() => onNavigate("auctions")}
+                            className="px-4 py-2 text-xs font-bold uppercase tracking-wider rounded-xl bg-neutral-800 hover:bg-neutral-700 text-neutral-300 transition-colors flex items-center gap-1.5 cursor-pointer"
+                        >
+                            <ArrowLeft className="w-3.5 h-3.5" /> Voltar
+                        </button>
                     </div>
-                    <button
-                        onClick={() => onNavigate("auctions")}
-                        className="px-4 py-2 text-xs font-bold uppercase tracking-wider rounded-xl bg-neutral-800 hover:bg-neutral-700 text-neutral-300 transition-colors"
-                    >
-                        Voltar
-                    </button>
-                </div>
 
                 {error && (
                     <div className="mb-6 p-4 rounded-xl bg-red-500/10 border border-red-500/30 text-red-400 text-sm font-medium">
@@ -296,7 +299,8 @@ export const CreateAuction: React.FC<CreateAuctionProps> = ({ onNavigate }) => {
                         {loading ? "Cadastrando Leilão..." : "Publicar Leilão"}
                     </button>
                 </form>
+                </div>
             </div>
-        </div>
+        </PageLayout>
     );
 };
