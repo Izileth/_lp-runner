@@ -1,4 +1,4 @@
-export type Route = "home" | "product" | "fins" | "about" | "contact" | "login" | "register" | "profile" | "auctions" | "create-auction" | "auction-detail";
+export type Route = "home" | "login" | "register" | "profile" | "auctions" | "create-auction" | "auction-detail";
 
 export type VehicleCondition = "novo" | "semi_novo" | "usado" | "colecionador";
 export type VehicleStatus = "rascunho" | "em_analise" | "em_leilao" | "vendido" | "rejeitado";
