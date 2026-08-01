@@ -42,7 +42,7 @@ export const Contact: React.FC<ContactProps> = ({ onNavigate }) => {
     usePageEntrance(containerRef, entranceAnimations);
 
     const handleSubmitSuccess = () => {
-        alert("Inquiry submitted. Our team will contact you within 24 hours.");
+        alert("Mensagem enviada. Nossa equipe de curadoria entrará em contato em até 24 horas.");
     };
 
     return (
@@ -54,13 +54,13 @@ export const Contact: React.FC<ContactProps> = ({ onNavigate }) => {
 
                 <div className="text-center md:text-left">
                     <p className="text-[11px] font-bold tracking-widest uppercase text-gray-sec mb-2">
-                        Get In Touch
+                        Fale Conosco
                     </p>
                     <h1
                         ref={titleRef}
-                        className="text-5xl sm:text-6xl md:text-7xl font-extrabold text-black-main tracking-tighter mb-12 font-display"
+                        className="text-5xl sm:text-6xl md:text-7xl font-extrabold text-black-main tracking-tighter mb-12 font-display uppercase"
                     >
-                        CONTACT US
+                        CONTATO
                     </h1>
                 </div>
 
@@ -68,42 +68,42 @@ export const Contact: React.FC<ContactProps> = ({ onNavigate }) => {
                     {/* Contact Info Block */}
                     <div className="contact-info-block md:col-span-5 flex flex-col justify-between gap-8">
                         <div>
-                            <h3 className="text-xs font-bold uppercase tracking-widest text-gray-sec mb-4">Inquiries</h3>
+                            <h3 className="text-xs font-bold uppercase tracking-widest text-gray-sec mb-4">Atendimento</h3>
                             <div className="flex flex-col gap-3">
                                 <div>
-                                    <p className="text-xs font-semibold text-black-main uppercase">General &amp; Orders</p>
+                                    <p className="text-xs font-semibold text-black-main uppercase">Dúvidas Gerais &amp; Leilões</p>
                                     <a
-                                        href="mailto:support@runnerspace.com"
+                                        href="mailto:suporte@auctionplatform.com"
                                         className="text-sm text-gray-sec hover:text-black-main transition-colors"
                                     >
-                                        support@runnerspace.com
+                                        suporte@auctionplatform.com
                                     </a>
                                 </div>
                                 <div>
-                                    <p className="text-xs font-semibold text-black-main uppercase">Design Lab Collaboration</p>
+                                    <p className="text-xs font-semibold text-black-main uppercase">Curadoria &amp; Avaliação</p>
                                     <a
-                                        href="mailto:lab@runnerspace.com"
+                                        href="mailto:curadoria@auctionplatform.com"
                                         className="text-sm text-gray-sec hover:text-black-main transition-colors"
                                     >
-                                        lab@runnerspace.com
+                                        curadoria@auctionplatform.com
                                     </a>
                                 </div>
                             </div>
                         </div>
 
                         <div>
-                            <h3 className="text-xs font-bold uppercase tracking-widest text-gray-sec mb-4">Office</h3>
-                            <p className="text-sm text-black-main font-semibold">Runner Studio Headquarters</p>
+                            <h3 className="text-xs font-bold uppercase tracking-widest text-gray-sec mb-4">Sede Corporativa</h3>
+                            <p className="text-sm text-black-main font-semibold">Auction Platform Headquarters</p>
                             <p className="text-xs text-gray-sec mt-1 leading-relaxed">
-                                Av. Beira Mar Norte, 1200<br />
-                                Florianópolis, SC, 88015-700<br />
-                                Brazil
+                                Av. Brigadeiro Faria Lima, 3000<br />
+                                São Paulo, SP, 01451-000<br />
+                                Brasil
                             </p>
                         </div>
 
                         <div className="border-t border-border-main pt-6">
                             <span className="text-[10px] font-bold tracking-widest uppercase text-black-main">
-                                Available Mon &ndash; Fri / 9:00 &ndash; 18:00 GMT-3
+                                Disponível Seg &ndash; Sex / 9:00 &ndash; 18:00 GMT-3
                             </span>
                         </div>
                     </div>

@@ -56,35 +56,35 @@ export const About: React.FC<AboutProps> = ({ onNavigate }) => {
 
                 <div className="text-center md:text-left">
                     <p className="text-[11px] font-bold tracking-widest uppercase text-gray-sec mb-2">
-                        Who We Are
+                        Sobre Nós
                     </p>
                     <h1
                         ref={titleRef}
-                        className="text-5xl sm:text-6xl md:text-7xl font-extrabold text-black-main tracking-tighter mb-8 font-display"
+                        className="text-5xl sm:text-6xl md:text-7xl font-extrabold text-black-main tracking-tighter mb-8 font-display uppercase"
                     >
-                        RUNNER STUDIO
+                        AUCTION PLATFORM
                     </h1>
                 </div>
 
                 <div className="about-content grid grid-cols-1 md:grid-cols-3 gap-8 md:gap-12 mt-12">
                     <div className="md:col-span-2">
                         <p className="text-lg sm:text-xl font-medium text-black-main leading-relaxed">
-                            We design high-performance gear for athletes, surf riders, and design enthusiasts. By blending avant-garde form with next-gen technical materials, we push the limits of performance and style.
+                            Nascemos da paixão por veículos raros, clássicos impecáveis e superesportivos de alta performance. Conectamos colecionadores e entusiastas em uma plataforma segura, transparente e exclusiva.
                         </p>
                         <p className="text-gray-sec mt-6 leading-relaxed">
-                            Our design methodology is inspired by dynamic forces—airflow, water turbulence, and structural kinetics. From the organic silhouettes of our footwear to the hydrodynamic foils of our carbon fiber surf fins, every curve is calculated to minimize drag and maximize expression.
+                            Nossa plataforma redefine a experiência de compra e venda de veículos de alto padrão. Através de tecnologia de ponta, oferecemos lances em tempo real, curadoria rigorosa de cada lote e um processo de arremate sem fricções. Aqui, o extraordinário encontra o seu próximo dono.
                         </p>
                     </div>
                     <div className="bg-card-bg p-8 rounded-xl border border-border-main flex flex-col justify-between">
                         <div>
-                            <h3 className="text-xs font-bold uppercase tracking-widest text-gray-sec mb-2">Founded</h3>
+                            <h3 className="text-xs font-bold uppercase tracking-widest text-gray-sec mb-2">Fundação</h3>
                             <p className="text-xl font-bold text-black-main">2026</p>
-                            <h3 className="text-xs font-bold uppercase tracking-widest text-gray-sec mt-6 mb-2">Location</h3>
-                            <p className="text-xl font-bold text-black-main">Florianópolis, BR</p>
+                            <h3 className="text-xs font-bold uppercase tracking-widest text-gray-sec mt-6 mb-2">Sede</h3>
+                            <p className="text-xl font-bold text-black-main">São Paulo, BR</p>
                         </div>
                         <div className="mt-8 border-t border-border-main pt-6">
                             <span className="text-[10px] font-bold tracking-widest uppercase text-black-main">
-                                Powered by Science &amp; Art
+                                Movidos pela Exclusividade
                             </span>
                         </div>
                     </div>
@@ -93,28 +93,28 @@ export const About: React.FC<AboutProps> = ({ onNavigate }) => {
                 {/* ---------- VALUES SECTION ---------- */}
                 <section className="mt-24">
                     <h2 className="text-2xl font-extrabold text-black-main tracking-tight mb-10 font-display">
-                        Core Principles
+                        Nossos Pilares
                     </h2>
                     <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
                         <div className="grid-item bg-card-bg p-8 rounded-xl border border-border-main">
-                            <p className="text-xs font-bold uppercase tracking-widest text-gray-sec mb-3">01 / Motion</p>
-                            <h3 className="text-lg font-bold text-black-main">Kinetic Geometry</h3>
+                            <p className="text-xs font-bold uppercase tracking-widest text-gray-sec mb-3">01 / Curadoria</p>
+                            <h3 className="text-lg font-bold text-black-main">Seleção Rigorosa</h3>
                             <p className="text-xs sm:text-sm text-gray-sec mt-2 leading-relaxed">
-                                Designing products that mimic the natural flow of biological motion, providing effortless energy return.
+                                Avaliamos a procedência, estado de conservação e originalidade de todos os veículos antes de aceitá-los em nossa plataforma.
                             </p>
                         </div>
                         <div className="grid-item bg-card-bg p-8 rounded-xl border border-border-main">
-                            <p className="text-xs font-bold uppercase tracking-widest text-gray-sec mb-3">02 / Flow</p>
-                            <h3 className="text-lg font-bold text-black-main">Hydrodynamics</h3>
+                            <p className="text-xs font-bold uppercase tracking-widest text-gray-sec mb-3">02 / Transparência</p>
+                            <h3 className="text-lg font-bold text-black-main">Lances Seguros</h3>
                             <p className="text-xs sm:text-sm text-gray-sec mt-2 leading-relaxed">
-                                Utilizing aerospace fluid simulation models to create the fastest surf fins and sporting equipment.
+                                Todo o histórico de lances é transparente e atualizado em tempo real, garantindo um ambiente de negociação justo.
                             </p>
                         </div>
                         <div className="grid-item bg-card-bg p-8 rounded-xl border border-border-main">
-                            <p className="text-xs font-bold uppercase tracking-widest text-gray-sec mb-3">03 / Earth</p>
-                            <h3 className="text-lg font-bold text-black-main">Responsible Tech</h3>
+                            <p className="text-xs font-bold uppercase tracking-widest text-gray-sec mb-3">03 / Exclusividade</p>
+                            <h3 className="text-lg font-bold text-black-main">Acesso Restrito</h3>
                             <p className="text-xs sm:text-sm text-gray-sec mt-2 leading-relaxed">
-                                Using biodegradable foams, algae-blended polymers, and recycled aerospace-grade carbon fiber.
+                                Focamos em um nicho de alto padrão, garantindo que cada leilão seja um evento único e prestigiado.
                             </p>
                         </div>
                     </div>

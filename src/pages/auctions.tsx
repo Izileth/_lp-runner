@@ -1,8 +1,11 @@
-import React, { useEffect, useState } from "react";
+import React, { useRef, useEffect, useState } from "react";
 import { supabase } from "../lib/supabase";
 import { VehicleCard } from "../components/molecules/VehicleCard";
 import { AuctionSkeletonLoader, AuctionErrorState } from "../components/molecules/AuctionLoaders";
 import PageLayout from "../components/templates/PageLayout";
+import { usePageAnimations } from "../hooks/usePageAnimations";
+import FloatingPill from "../components/atoms/FloatingPill";
+import Button from "../components/atoms/Button";
 import type { Auction, Route } from "../types";
 import { Plus } from "lucide-react";
 
@@ -11,6 +14,9 @@ interface AuctionsProps {
 }
 
 export const Auctions: React.FC<AuctionsProps> = ({ onNavigate }) => {
+    const pageRef = useRef<HTMLDivElement>(null);
+    usePageAnimations(pageRef);
+
     const [auctions, setAuctions] = useState<Auction[]>([]);
     const [loading, setLoading] = useState<boolean>(true);
     const [error, setError] = useState<string | null>(null);
@@ -53,58 +59,68 @@ export const Auctions: React.FC<AuctionsProps> = ({ onNavigate }) => {
     }, [filter]);
 
     return (
-        <PageLayout onNavigate={onNavigate} currentRoute="auctions">
-            <div className="w-full bg-black text-white min-h-[calc(100vh-140px)] p-6 md:p-12 font-sans">
-                <div className="max-w-7xl mx-auto space-y-8">
-                    {/* Header da Página */}
-                    <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 border-b border-neutral-800 pb-8">
-                        <div>
-                            <span className="text-xs uppercase font-extrabold text-amber-500 tracking-widest">
-                                Plataforma de Leilões
-                            </span>
-                            <h1 className="text-4xl font-black text-white tracking-tight mt-1">
-                                Veículos em Leilão
-                            </h1>
-                        </div>
+        <PageLayout onNavigate={onNavigate} currentRoute="auctions" showFooterLinks={true}>
+            <div ref={pageRef} className="relative flex-1 flex flex-col items-center w-full">
+                {/* Decorative floating pills */}
+                <FloatingPill className="left-[5%] top-[10%] w-12 h-7 rotate-[-15deg] floating-pill" />
+                <FloatingPill className="right-[8%] top-[20%] w-14 h-8 rotate-[30deg] floating-pill" />
+                <FloatingPill className="left-[15%] bottom-[10%] w-10 h-6 rotate-[-8deg] blur-[1px] floating-pill" />
 
-                        <div className="flex items-center gap-3">
-                            <button
-                                onClick={() => onNavigate("create-auction")}
-                                className="px-5 py-3 text-xs font-extrabold uppercase tracking-wider rounded-xl bg-amber-500 hover:bg-amber-400 text-black transition-all shadow-lg shadow-amber-500/20 flex items-center gap-2 cursor-pointer"
-                            >
-                                <Plus className="w-4 h-4" /> Criar Leilão
-                            </button>
-                        </div>
+                <section className="w-full max-w-7xl px-6 pt-12 pb-16 flex flex-col items-center text-center relative overflow-hidden">
+                    <div className="absolute inset-0 flex items-center justify-center pointer-events-none select-none opacity-[0.03] overflow-hidden -z-10">
+                        <span className="text-[30vw] font-display font-black tracking-tighter leading-none uppercase">
+                            AUCTIONS
+                        </span>
                     </div>
 
+                    <span className="text-[10px] font-bold tracking-[0.25em] uppercase text-gray-sec mb-4 anim-fade-up">
+                        PLATAFORMA DE LEILÕES EXCLUSIVOS
+                    </span>
+                    <h1 className="text-[8vw] sm:text-[6vw] lg:text-[5vw] leading-[0.9] text-black-main font-display font-black mb-8 max-w-5xl tracking-tight anim-title uppercase">
+                        Veículos em Leilão
+                    </h1>
+
+                    <div className="flex flex-wrap justify-center gap-4 anim-fade-up">
+                        <Button
+                            onClick={() => onNavigate("create-auction")}
+                            variant="primary"
+                            className="px-8 py-4 flex items-center gap-2"
+                        >
+                            <Plus className="w-5 h-5" />
+                            Criar Leilão
+                        </Button>
+                    </div>
+                </section>
+
+                <section className="w-full max-w-7xl px-6 pb-24">
                     {/* Filtros */}
-                    <div className="flex items-center gap-2">
+                    <div className="flex justify-center items-center gap-4 mb-12 anim-fade-up">
                         <button
                             onClick={() => setFilter("todos")}
-                            className={`px-4 py-2 rounded-xl text-xs font-bold transition-colors cursor-pointer ${
+                            className={`px-6 py-3 rounded-full text-xs font-bold transition-all uppercase tracking-wider ${
                                 filter === "todos"
-                                    ? "bg-white text-black"
-                                    : "bg-neutral-900 text-neutral-400 hover:text-white"
+                                    ? "bg-black-main text-white shadow-lg"
+                                    : "bg-card-bg text-gray-sec hover:bg-black-main/5 border border-border-main"
                             }`}
                         >
                             Todos
                         </button>
                         <button
                             onClick={() => setFilter("ativo")}
-                            className={`px-4 py-2 rounded-xl text-xs font-bold transition-colors cursor-pointer ${
+                            className={`px-6 py-3 rounded-full text-xs font-bold transition-all uppercase tracking-wider ${
                                 filter === "ativo"
-                                    ? "bg-emerald-500 text-black"
-                                    : "bg-neutral-900 text-neutral-400 hover:text-white"
+                                    ? "bg-black-main text-white shadow-lg"
+                                    : "bg-card-bg text-gray-sec hover:bg-black-main/5 border border-border-main"
                             }`}
                         >
                             Ao Vivo
                         </button>
                         <button
                             onClick={() => setFilter("agendado")}
-                            className={`px-4 py-2 rounded-xl text-xs font-bold transition-colors cursor-pointer ${
+                            className={`px-6 py-3 rounded-full text-xs font-bold transition-all uppercase tracking-wider ${
                                 filter === "agendado"
-                                    ? "bg-amber-500 text-black"
-                                    : "bg-neutral-900 text-neutral-400 hover:text-white"
+                                    ? "bg-black-main text-white shadow-lg"
+                                    : "bg-card-bg text-gray-sec hover:bg-black-main/5 border border-border-main"
                             }`}
                         >
                             Em Breve
@@ -113,35 +129,39 @@ export const Auctions: React.FC<AuctionsProps> = ({ onNavigate }) => {
 
                     {/* Conteúdo: Loading / Erro / Cards */}
                     {loading ? (
-                        <AuctionSkeletonLoader />
+                        <div className="anim-fade-up"><AuctionSkeletonLoader /></div>
                     ) : error ? (
-                        <AuctionErrorState
-                            title="Erro ao Carregar Leilões"
-                            message={error}
-                            onRetry={fetchAuctions}
-                        />
+                        <div className="anim-fade-up">
+                            <AuctionErrorState
+                                title="Erro ao Carregar Leilões"
+                                message={error}
+                                onRetry={fetchAuctions}
+                            />
+                        </div>
                     ) : auctions.length === 0 ? (
-                        <div className="text-center py-20 bg-neutral-900/50 border border-neutral-800 rounded-3xl space-y-4 my-8">
-                            <p className="text-neutral-400 text-sm">Nenhum leilão encontrado para este filtro.</p>
-                            <button
+                        <div className="showcase-card anim-stagger flex flex-col items-center text-center py-24 bg-card-bg border border-border-main rounded-2xl">
+                            <h3 className="text-2xl font-display font-black text-black-main uppercase mb-2">Nenhum leilão encontrado</h3>
+                            <p className="text-sm text-gray-sec mb-8">Nenhum leilão para este filtro no momento.</p>
+                            <Button
                                 onClick={() => onNavigate("create-auction")}
-                                className="px-5 py-2.5 text-xs font-bold bg-neutral-800 hover:bg-neutral-700 text-white rounded-xl cursor-pointer"
+                                variant="outline"
                             >
                                 Cadastrar o Primeiro Leilão
-                            </button>
+                            </Button>
                         </div>
                     ) : (
-                        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                            {auctions.map((auction) => (
-                                <VehicleCard
-                                    key={auction.id}
-                                    auction={auction}
-                                    onSelect={(id) => onNavigate("auction-detail", id)}
-                                />
+                        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+                            {auctions.map((auction, idx) => (
+                                <div key={auction.id} className="anim-stagger" style={{ animationDelay: `${idx * 100}ms` }}>
+                                    <VehicleCard
+                                        auction={auction}
+                                        onSelect={(id) => onNavigate("auction-detail", id)}
+                                    />
+                                </div>
                             ))}
                         </div>
                     )}
-                </div>
+                </section>
             </div>
         </PageLayout>
     );
