@@ -7,8 +7,6 @@ import { usePageAnimations } from "../hooks/usePageAnimations";
 import FloatingPill from "../components/atoms/FloatingPill";
 import Button from "../components/atoms/Button";
 import type { Auction, Route } from "../types";
-import { Plus } from "lucide-react";
-
 interface AuctionsProps {
     onNavigate: (route: Route, auctionId?: string) => void;
 }
@@ -79,17 +77,6 @@ export const Auctions: React.FC<AuctionsProps> = ({ onNavigate }) => {
                     <h1 className="text-[8vw] sm:text-[6vw] lg:text-[5vw] leading-[0.9] text-black-main font-display font-black mb-8 max-w-5xl tracking-tight anim-title uppercase">
                         Veículos em Leilão
                     </h1>
-
-                    <div className="flex flex-wrap justify-center gap-4 anim-fade-up">
-                        <Button
-                            onClick={() => onNavigate("create-auction")}
-                            variant="primary"
-                            className="px-8 py-4 flex items-center gap-2"
-                        >
-                            <Plus className="w-5 h-5" />
-                            Criar Leilão
-                        </Button>
-                    </div>
                 </section>
 
                 <section className="w-full max-w-7xl px-6 pb-24">
