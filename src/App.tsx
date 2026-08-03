@@ -26,10 +26,6 @@ function App() {
     const handleNavigate = (route: Route, itemId?: string) => {
         const paths: Record<Route, string> = {
             home: "/",
-            product: "/product",
-            about: "/about",
-            fins: "/fins",
-            contact: "/contact",
             login: "/login",
             register: "/register",
             profile: "/profile",
