@@ -15,31 +15,31 @@ export const Footer: React.FC<FooterProps> = ({ onNavigate, showLinks = true }) 
                         onClick={() => onNavigate("home")}
                         className="hover:text-black-main transition-colors cursor-pointer"
                     >
-                        Home
+                        Início
                     </button>
                     <button
-                        onClick={() => onNavigate("product")}
+                        onClick={() => onNavigate("auctions")}
                         className="hover:text-black-main transition-colors cursor-pointer"
                     >
-                        Sneakers
+                        Leilões
                     </button>
                     <button
-                        onClick={() => onNavigate("fins")}
+                        onClick={() => onNavigate("create-auction")}
                         className="hover:text-black-main transition-colors cursor-pointer"
                     >
-                        Fins
+                        Criar Leilão
                     </button>
                     <button
-                        onClick={() => onNavigate("about")}
+                        onClick={() => onNavigate("login")}
                         className="hover:text-black-main transition-colors cursor-pointer"
                     >
-                        About
+                        Entrar
                     </button>
                     <button
-                        onClick={() => onNavigate("contact")}
+                        onClick={() => onNavigate("register")}
                         className="hover:text-black-main transition-colors cursor-pointer"
                     >
-                        Contact
+                        Cadastrar
                     </button>
                 </div>
             ) : (

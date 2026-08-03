@@ -78,21 +78,12 @@ export const Navbar: React.FC<NavbarProps> = ({ onNavigate, currentRoute }) => {
                 {/* Desktop Nav Links */}
                 <nav className="hidden md:flex items-center gap-8 text-[11px] font-semibold tracking-widest uppercase text-black-main">
                     <button
-                        onClick={() => onNavigate("product")}
+                        onClick={() => onNavigate("home")}
                         className={`hover:opacity-60 transition-opacity cursor-pointer ${
-                            currentRoute === "product" ? "underline underline-offset-4 decoration-border-main" : ""
+                            currentRoute === "home" ? "underline underline-offset-4 decoration-border-main" : ""
                         }`}
                     >
-                        Shop
-                    </button>
-                    <span className="text-border-main">/</span>
-                    <button
-                        onClick={() => onNavigate("fins")}
-                        className={`hover:opacity-60 transition-opacity cursor-pointer ${
-                            currentRoute === "fins" ? "underline underline-offset-4 decoration-border-main" : ""
-                        }`}
-                    >
-                        Fins
+                        Início
                     </button>
                     <span className="text-border-main">/</span>
                     <button
@@ -105,21 +96,12 @@ export const Navbar: React.FC<NavbarProps> = ({ onNavigate, currentRoute }) => {
                     </button>
                     <span className="text-border-main">/</span>
                     <button
-                        onClick={() => onNavigate("about")}
+                        onClick={() => onNavigate("create-auction")}
                         className={`hover:opacity-60 transition-opacity cursor-pointer ${
-                            currentRoute === "about" ? "underline underline-offset-4 decoration-border-main" : ""
+                            currentRoute === "create-auction" ? "underline underline-offset-4 decoration-border-main" : ""
                         }`}
                     >
-                        About
-                    </button>
-                    <span className="text-border-main">/</span>
-                    <button
-                        onClick={() => onNavigate("contact")}
-                        className={`hover:opacity-60 transition-opacity cursor-pointer ${
-                            currentRoute === "contact" ? "underline underline-offset-4 decoration-border-main" : ""
-                        }`}
-                    >
-                        Contact
+                        Criar Leilão
                     </button>
                 </nav>
 
@@ -200,19 +182,7 @@ export const Navbar: React.FC<NavbarProps> = ({ onNavigate, currentRoute }) => {
                         onClick={() => handleMobileLinkClick("home")}
                         className="mobile-nav-link text-left text-4xl sm:text-5xl font-bold tracking-tighter uppercase font-display cursor-pointer hover:text-gray-sec transition-colors"
                     >
-                        Home
-                    </button>
-                    <button
-                        onClick={() => handleMobileLinkClick("product")}
-                        className="mobile-nav-link text-left text-4xl sm:text-5xl font-bold tracking-tighter uppercase font-display cursor-pointer hover:text-gray-sec transition-colors"
-                    >
-                        Shop Sneakers
-                    </button>
-                    <button
-                        onClick={() => handleMobileLinkClick("fins")}
-                        className="mobile-nav-link text-left text-4xl sm:text-5xl font-bold tracking-tighter uppercase font-display cursor-pointer hover:text-gray-sec transition-colors"
-                    >
-                        Explore Fins
+                        Início
                     </button>
                     <button
                         onClick={() => handleMobileLinkClick("auctions")}
@@ -221,16 +191,16 @@ export const Navbar: React.FC<NavbarProps> = ({ onNavigate, currentRoute }) => {
                         Leilões
                     </button>
                     <button
-                        onClick={() => handleMobileLinkClick("about")}
+                        onClick={() => handleMobileLinkClick("create-auction")}
                         className="mobile-nav-link text-left text-4xl sm:text-5xl font-bold tracking-tighter uppercase font-display cursor-pointer hover:text-gray-sec transition-colors"
                     >
-                        About Studio
+                        Criar Leilão
                     </button>
                     <button
-                        onClick={() => handleMobileLinkClick("contact")}
+                        onClick={() => handleMobileLinkClick("profile")}
                         className="mobile-nav-link text-left text-4xl sm:text-5xl font-bold tracking-tighter uppercase font-display cursor-pointer hover:text-gray-sec transition-colors"
                     >
-                        Contact
+                        Minha Conta
                     </button>
                 </div>
 

@@ -1,19 +1,201 @@
-import React, { useRef } from "react";
-import type { Route } from "../types";
+import React, { useRef, useEffect, useState } from "react";
+import type { Route, Auction } from "../types";
 import { usePageAnimations } from "../hooks/usePageAnimations";
 import PageLayout from "../components/templates/PageLayout";
 import FloatingPill from "../components/atoms/FloatingPill";
 import Button from "../components/atoms/Button";
+import { supabase } from "../lib/supabase";
 
 interface HomeProps {
     onNavigate: (route: Route) => void;
 }
 
+// Utilitário de formatação de preço
+const formatPrice = (value: number) =>
+    `R$ ${value.toLocaleString("pt-BR", { minimumFractionDigits: 0 })}`;
+
+// Timer hook reutilizável
+function useTimeLeft(starts_at: string, ends_at: string, status: string) {
+    const [timeLeft, setTimeLeft] = useState("");
+    useEffect(() => {
+        const calc = () => {
+            const now = Date.now();
+            const target = status === "agendado"
+                ? new Date(starts_at).getTime()
+                : new Date(ends_at).getTime();
+            const diff = target - now;
+            if (diff <= 0) { setTimeLeft(status === "ativo" ? "Encerrado" : "Em breve"); return; }
+            const d = Math.floor(diff / 86400000);
+            const h = Math.floor((diff % 86400000) / 3600000);
+            const m = Math.floor((diff % 3600000) / 60000);
+            const s = Math.floor((diff % 60000) / 1000);
+            setTimeLeft(d > 0 ? `${d}d ${h}h ${m}m` : `${String(h).padStart(2,"0")}:${String(m).padStart(2,"0")}:${String(s).padStart(2,"0")}`);
+        };
+        calc();
+        const iv = setInterval(calc, 1000);
+        return () => clearInterval(iv);
+    }, [starts_at, ends_at, status]);
+    return timeLeft;
+}
+
+// ── Tamanhos de card no grid dinâmico ──────────────────────────────────────
+// Cada posição do array define o span do card no grid de 6 colunas
+const GRID_SPANS = [
+    "col-span-6 sm:col-span-4 row-span-2",   // 0 — grande
+    "col-span-6 sm:col-span-2 row-span-1",   // 1 — médio
+    "col-span-6 sm:col-span-2 row-span-1",   // 2 — médio
+    "col-span-6 sm:col-span-3 row-span-1",   // 3 — largo
+    "col-span-6 sm:col-span-3 row-span-1",   // 4 — largo
+    "col-span-6 sm:col-span-2 row-span-2",   // 5 — alto
+    "col-span-6 sm:col-span-4 row-span-1",   // 6 — wide
+    "col-span-6 sm:col-span-2 row-span-1",   // 7 — pequeno
+];
+
+// ── Card individual de showcase ────────────────────────────────────────────
+interface ShowcaseCardProps {
+    auction: Auction;
+    index: number;
+    onNavigate: (route: Route) => void;
+}
+
+const ShowcaseCard: React.FC<ShowcaseCardProps> = ({ auction, index, onNavigate }) => {
+    const { vehicle, status, starts_at, ends_at, current_price } = auction;
+    const timeLeft = useTimeLeft(starts_at, ends_at, status);
+    const span = GRID_SPANS[index % GRID_SPANS.length];
+    const isLarge = span.includes("row-span-2");
+    const imgHeight = isLarge ? "h-56 sm:h-full" : "h-36 sm:h-44";
+
+    const coverImage =
+        vehicle?.images?.find((i) => i.is_cover)?.url ||
+        vehicle?.images?.[0]?.url ||
+        "https://images.unsplash.com/photo-1503376780353-7e6692767b70?auto=format&fit=crop&w=800&q=80";
+
+    const displayPrice = current_price || vehicle?.starting_price || 0;
+
+    return (
+        <div
+            className={`${span} showcase-card anim-stagger group relative bg-card-bg border border-border-main rounded-2xl overflow-hidden flex flex-col transition-all duration-500 hover:shadow-xl hover:border-black-main cursor-pointer`}
+            onClick={() => onNavigate("auctions")}
+        >
+            {/* Imagem */}
+            <div className={`relative w-full ${imgHeight} overflow-hidden shrink-0`}>
+                <img
+                    src={coverImage}
+                    alt={`${vehicle?.brand} ${vehicle?.model}`}
+                    className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700 grayscale group-hover:grayscale-0"
+                />
+                {/* Badge status */}
+                <div className="absolute top-3 left-3">
+                    {status === "ativo" && (
+                        <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[10px] font-bold bg-emerald-500/90 text-black animate-pulse">
+                            <span className="w-1.5 h-1.5 rounded-full bg-black" />
+                            AO VIVO
+                        </span>
+                    )}
+                    {status === "agendado" && (
+                        <span className="inline-flex items-center px-2.5 py-1 rounded-full text-[10px] font-semibold bg-amber-500/90 text-black">
+                            EM BREVE
+                        </span>
+                    )}
+                    {status === "encerrado" && (
+                        <span className="inline-flex items-center px-2.5 py-1 rounded-full text-[10px] font-semibold bg-neutral-700 text-neutral-300">
+                            ENCERRADO
+                        </span>
+                    )}
+                </div>
+                {/* Timer */}
+                <div className="absolute bottom-2 left-2 right-2 flex items-center justify-between px-2.5 py-1 rounded-lg bg-black/60 backdrop-blur-md border border-white/10 text-[9px] text-white">
+                    <span className="font-medium opacity-70">Tempo:</span>
+                    <span className={`font-mono font-bold ${status === "ativo" ? "text-emerald-400" : "text-gray-300"}`}>
+                        {timeLeft}
+                    </span>
+                </div>
+            </div>
+
+            {/* Info */}
+            <div className="p-4 flex flex-col flex-1 justify-between gap-2">
+                <div>
+                    <div className="flex items-center justify-between text-[9px] font-bold tracking-widest uppercase text-gray-sec mb-0.5">
+                        <span>{vehicle?.brand}</span>
+                        <span>{vehicle?.year_manufacture}</span>
+                    </div>
+                    <h3 className="text-base font-extrabold text-black-main font-display uppercase tracking-tight line-clamp-1">
+                        {vehicle?.model}
+                    </h3>
+                    {isLarge && (
+                        <p className="text-[11px] text-gray-sec mt-1 line-clamp-2">
+                            {vehicle?.description || `${vehicle?.mileage?.toLocaleString("pt-BR") ?? 0} km · ${vehicle?.color ?? ""} · ${vehicle?.condition?.toUpperCase() ?? ""}`}
+                        </p>
+                    )}
+                </div>
+                <div className="pt-3 border-t border-border-main flex items-end justify-between">
+                    <div>
+                        <span className="block text-[9px] font-bold tracking-widest text-gray-sec uppercase mb-0.5">
+                            {current_price ? "Lance Atual" : "Inicial"}
+                        </span>
+                        <p className="text-base font-bold text-black-main leading-none">
+                            {formatPrice(displayPrice)}
+                        </p>
+                    </div>
+                    <button
+                        className="px-3 py-1.5 text-[10px] font-bold uppercase tracking-wider rounded-lg border border-black-main text-black-main hover:bg-black-main hover:text-white transition-colors"
+                        onClick={(e) => { e.stopPropagation(); onNavigate("auctions"); }}
+                    >
+                        Participar
+                    </button>
+                </div>
+            </div>
+        </div>
+    );
+};
+
+// ── Skeleton do card ───────────────────────────────────────────────────────
+const CardSkeleton: React.FC<{ span: string }> = ({ span }) => (
+    <div className={`${span} bg-card-bg border border-border-main rounded-2xl overflow-hidden animate-pulse`}>
+        <div className="h-44 bg-black-main/5" />
+        <div className="p-4 flex flex-col gap-2">
+            <div className="h-3 w-1/2 bg-black-main/10 rounded" />
+            <div className="h-5 w-3/4 bg-black-main/10 rounded" />
+            <div className="h-3 w-full bg-black-main/5 rounded mt-auto" />
+        </div>
+    </div>
+);
+
+// ── Página principal ───────────────────────────────────────────────────────
 export const Home: React.FC<HomeProps> = ({ onNavigate }) => {
     const heroRef = useRef<HTMLDivElement>(null);
-
-    // Apply floating animations and transitions to all items using standard semantic selectors
     usePageAnimations(heroRef);
+
+    const [auctions, setAuctions] = useState<Auction[]>([]);
+    const [loading, setLoading] = useState(true);
+
+    useEffect(() => {
+        const fetchFeatured = async () => {
+            try {
+                const { data } = await supabase
+                    .from("auctions")
+                    .select(`
+                        *,
+                        vehicle:vehicles(
+                            *,
+                            images:vehicle_images(*)
+                        )
+                    `)
+                    .in("status", ["ativo", "agendado"])
+                    .order("created_at", { ascending: false })
+                    .limit(8);
+
+                setAuctions(data || []);
+            } catch (err) {
+                console.error("Erro ao buscar leilões em destaque:", err);
+            } finally {
+                setLoading(false);
+            }
+        };
+        fetchFeatured();
+    }, []);
+
+    const hasAuctions = auctions.length > 0;
 
     return (
         <PageLayout onNavigate={onNavigate} currentRoute="home" showFooterLinks={true}>
@@ -37,9 +219,7 @@ export const Home: React.FC<HomeProps> = ({ onNavigate }) => {
                         PLATAFORMA PREMIUM DE VEÍCULOS
                     </span>
 
-                    <h1
-                        className="text-[10vw] sm:text-[8vw] lg:text-[7vw] leading-[0.9] text-black-main font-display font-black mb-8 max-w-5xl tracking-tight anim-title uppercase"
-                    >
+                    <h1 className="text-[10vw] sm:text-[8vw] lg:text-[7vw] leading-[0.9] text-black-main font-display font-black mb-8 max-w-5xl tracking-tight anim-title uppercase">
                         PERFORMANCE &amp; LUXO. <br className="hidden sm:inline" />
                         REDEFININDO O EXCLUSIVO.
                     </h1>
@@ -68,87 +248,57 @@ export const Home: React.FC<HomeProps> = ({ onNavigate }) => {
 
                 {/* ================= FEATURED SHOWCASE GRID ================= */}
                 <section className="w-full max-w-7xl px-6 py-16 border-t border-border-main">
-                    <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-                        {/* Vehicle Showcase 1 */}
-                        <div className="showcase-card anim-stagger group relative bg-card-bg border border-border-main rounded-2xl p-8 sm:p-12 overflow-hidden flex flex-col justify-between min-h-[500px] transition-all duration-500 hover:shadow-xl hover:border-black-main">
-                            <div className="absolute top-0 right-0 w-64 h-64 bg-radial from-black-main/5 to-transparent rounded-full blur-2xl pointer-events-none group-hover:scale-150 transition-all duration-700"></div>
-                            
-                            <div>
-                                <span className="text-[10px] font-bold tracking-widest uppercase text-gray-sec">
-                                    01 / ALTA PERFORMANCE
-                                </span>
-                                <h3 className="text-3xl font-extrabold text-black-main mt-2 font-display uppercase tracking-tight">
-                                    PORSCHE 911 GT3
-                                </h3>
-                                <p className="text-xs text-gray-sec mt-1 max-w-xs leading-relaxed">
-                                    Engenharia alemã levada ao limite. Precisão, velocidade e um legado nas pistas.
-                                </p>
-                            </div>
-
-                            {/* Center Product Image Showcase */}
-                            <div className="my-8 flex items-center justify-center relative z-10 transition-transform duration-500 group-hover:scale-105 h-48">
-                                <img
-                                    src="https://images.unsplash.com/photo-1503376780353-7e6692767b70?auto=format&fit=crop&w=800&q=80"
-                                    alt="Porsche"
-                                    className="w-full h-full object-cover rounded-xl shadow-lg drop-shadow-[0_15px_25px_rgba(0,0,0,0.15)] grayscale group-hover:grayscale-0 transition-all duration-700"
-                                />
-                            </div>
-
-                            <div className="flex items-center justify-between mt-4 relative z-10">
-                                <div>
-                                    <p className="text-[9px] font-bold tracking-widest text-gray-sec uppercase">LANCE INICIAL</p>
-                                    <p className="text-xl font-bold text-black-main">R$ 1.500.000</p>
-                                </div>
-                                <Button
-                                    variant="outline"
-                                    onClick={() => onNavigate("auctions")}
-                                    className="px-6 py-3"
-                                >
-                                    Participar
-                                </Button>
-                            </div>
+                    <div className="flex items-end justify-between mb-10">
+                        <div>
+                            <span className="text-[10px] font-bold tracking-[0.25em] uppercase text-gray-sec block mb-1">
+                                DESTAQUES AO VIVO
+                            </span>
+                            <h2 className="text-2xl sm:text-3xl font-display font-black text-black-main uppercase tracking-tight">
+                                Leilões em Destaque
+                            </h2>
                         </div>
-
-                        {/* Vehicle Showcase 2 */}
-                        <div className="showcase-card anim-stagger group relative bg-card-bg border border-border-main rounded-2xl p-8 sm:p-12 overflow-hidden flex flex-col justify-between min-h-[500px] transition-all duration-500 hover:shadow-xl hover:border-black-main">
-                            <div className="absolute top-0 right-0 w-64 h-64 bg-radial from-black-main/5 to-transparent rounded-full blur-2xl pointer-events-none group-hover:scale-150 transition-all duration-700"></div>
-
-                            <div>
-                                <span className="text-[10px] font-bold tracking-widest uppercase text-gray-sec">
-                                    02 / CLÁSSICOS RAROS
-                                </span>
-                                <h3 className="text-3xl font-extrabold text-black-main mt-2 font-display uppercase tracking-tight">
-                                    FERRARI TESTAROSSA
-                                </h3>
-                                <p className="text-xs text-gray-sec mt-1 max-w-xs leading-relaxed">
-                                    O ícone dos anos 80. Motor flat-12, design inconfundível e valorização histórica garantida.
-                                </p>
-                            </div>
-
-                            {/* Beautiful Graphic */}
-                            <div className="my-8 flex items-center justify-center relative z-10 transition-transform duration-500 group-hover:scale-105 h-48">
-                                <img
-                                    src="https://images.unsplash.com/photo-1592198084033-aade902d1aae?auto=format&fit=crop&w=800&q=80"
-                                    alt="Classic Car"
-                                    className="w-full h-full object-cover rounded-xl shadow-lg drop-shadow-[0_15px_25px_rgba(0,0,0,0.15)] grayscale group-hover:grayscale-0 transition-all duration-700"
-                                />
-                            </div>
-
-                            <div className="flex items-center justify-between mt-4 relative z-10">
-                                <div>
-                                    <p className="text-[9px] font-bold tracking-widest text-gray-sec uppercase">LANCE INICIAL</p>
-                                    <p className="text-xl font-bold text-black-main">R$ 2.100.000</p>
-                                </div>
-                                <Button
-                                    variant="outline"
-                                    onClick={() => onNavigate("auctions")}
-                                    className="px-6 py-3"
-                                >
-                                    Participar
-                                </Button>
-                            </div>
-                        </div>
+                        <button
+                            onClick={() => onNavigate("auctions")}
+                            className="text-[11px] font-bold tracking-widest uppercase text-gray-sec hover:text-black-main transition-colors underline underline-offset-4 decoration-border-main"
+                        >
+                            Ver Todos →
+                        </button>
                     </div>
+
+                    {loading ? (
+                        /* Skeleton grid */
+                        <div className="grid grid-cols-6 gap-4 auto-rows-[180px]">
+                            {GRID_SPANS.slice(0, 6).map((span, i) => (
+                                <CardSkeleton key={i} span={span} />
+                            ))}
+                        </div>
+                    ) : hasAuctions ? (
+                        /* Dynamic masonry-like grid */
+                        <div className="grid grid-cols-6 gap-4 auto-rows-[180px]">
+                            {auctions.map((auction, idx) => (
+                                <ShowcaseCard
+                                    key={auction.id}
+                                    auction={auction}
+                                    index={idx}
+                                    onNavigate={onNavigate}
+                                />
+                            ))}
+                        </div>
+                    ) : (
+                        /* Empty state */
+                        <div className="flex flex-col items-center text-center py-24 bg-card-bg border border-border-main rounded-2xl">
+                            <span className="text-5xl mb-4">🏎️</span>
+                            <h3 className="text-xl font-display font-black text-black-main uppercase mb-2">
+                                Nenhum leilão ativo
+                            </h3>
+                            <p className="text-sm text-gray-sec mb-8 max-w-xs">
+                                Seja o primeiro a cadastrar um veículo exclusivo na plataforma.
+                            </p>
+                            <Button onClick={() => onNavigate("create-auction")} variant="outline">
+                                Cadastrar Leilão
+                            </Button>
+                        </div>
+                    )}
                 </section>
 
                 {/* ================= PHILOSOPHY / TECH SPECS ================= */}
