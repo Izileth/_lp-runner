@@ -1,10 +1,10 @@
 import { useState, useEffect, useRef } from "react";
 import gsap from "gsap";
 import type { Route } from "../../types";
-import { useCart } from "../../context/CartContext";
 import { useAuth } from "../../context/AuthContext";
+import { useBid } from "../../context/BidContext";
 import Logo from "../atoms/Logo";
-import BagButton from "../molecules/BagButton";
+import BidCard from "../molecules/BidCard";
 import { User, LogOut } from "lucide-react";
 
 interface NavbarProps {
@@ -14,8 +14,9 @@ interface NavbarProps {
 
 export const Navbar: React.FC<NavbarProps> = ({ onNavigate, currentRoute }) => {
     const [isOpen, setIsOpen] = useState(false);
-    const { bagTotal, bagItemsCount } = useCart();
+   // const { bagTotal, bagItemsCount } = useCart();
     const { user, signOut } = useAuth();
+    const { latestBid, totalActiveBids } = useBid();
     const sidebarRef = useRef<HTMLDivElement>(null);
     const menuBtnRef = useRef<HTMLButtonElement>(null);
 
@@ -138,12 +139,15 @@ export const Navbar: React.FC<NavbarProps> = ({ onNavigate, currentRoute }) => {
                         </button>
                     )}
 
-                    {/* Bag Button */}
-                    <BagButton
-                        totalPrice={bagTotal}
-                        itemsCount={bagItemsCount}
-                        onClick={() => onNavigate("product")}
-                    />
+                    {/* Active Bid Card (only shown when user has active bids) */}
+                    {user && latestBid && (
+                        <BidCard
+                            latestBid={latestBid}
+                            totalActiveBids={totalActiveBids}
+                            onNavigate={onNavigate}
+                        />
+                    )}
+             
 
                     {/* Mobile Hamburger Button */}
                     <button
