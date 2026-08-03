@@ -9,6 +9,8 @@ import FloatingPill from "../components/atoms/FloatingPill";
 import type { Auction, Bid, Route } from "../types";
 import { ArrowLeft } from "lucide-react";
 
+import { extractIdFromSlug } from "../lib/utils";
+
 interface AuctionDetailProps {
     auctionId: string;
     onNavigate: (route: Route, itemId?: string) => void;
@@ -33,6 +35,7 @@ export const AuctionDetail: React.FC<AuctionDetailProps> = ({ auctionId, onNavig
             // setLoading(true);
             //  setFetchError(null);
 
+            const actualId = extractIdFromSlug(auctionId);
             const { data: auctionData, error: auctionError } = await supabase
                 .from("auctions")
                 .select(`
@@ -43,7 +46,7 @@ export const AuctionDetail: React.FC<AuctionDetailProps> = ({ auctionId, onNavig
                         seller:profiles(*)
                     )
                 `)
-                .eq("id", auctionId)
+                .eq("id", actualId)
                 .single();
 
             if (auctionError) throw auctionError;
@@ -58,7 +61,7 @@ export const AuctionDetail: React.FC<AuctionDetailProps> = ({ auctionId, onNavig
                     *,
                     bidder:profiles(full_name, avatar_url)
                 `)
-                .eq("auction_id", auctionId)
+                .eq("auction_id", actualId)
                 .order("created_at", { ascending: false });
 
             if (bidsError) throw bidsError;
@@ -84,16 +87,17 @@ export const AuctionDetail: React.FC<AuctionDetailProps> = ({ auctionId, onNavig
 
         loadAuctionData();
 
+        const actualId = extractIdFromSlug(auctionId);
         const bidsSubscription = supabase
-            .channel(`auction-${auctionId}`)
+            .channel(`auction-${actualId}`)
             .on(
                 "postgres_changes",
-                { event: "INSERT", schema: "public", table: "bids", filter: `auction_id=eq.${auctionId}` },
+                { event: "INSERT", schema: "public", table: "bids", filter: `auction_id=eq.${actualId}` },
                 () => fetchAuctionData()
             )
             .on(
                 "postgres_changes",
-                { event: "UPDATE", schema: "public", table: "auctions", filter: `id=eq.${auctionId}` },
+                { event: "UPDATE", schema: "public", table: "auctions", filter: `id=eq.${actualId}` },
                 () => fetchAuctionData()
             )
             .subscribe();
@@ -102,6 +106,14 @@ export const AuctionDetail: React.FC<AuctionDetailProps> = ({ auctionId, onNavig
             supabase.removeChannel(bidsSubscription);
         };
     }, [auctionId]);
+
+    useEffect(() => {
+        if (auction?.vehicle) {
+            document.title = `${auction.vehicle.brand} ${auction.vehicle.model} - lp-space`;
+        } else {
+            document.title = "Leilão de Veículo - lp-space";
+        }
+    }, [auction]);
 
     const handlePlaceBid = async (e: React.FormEvent) => {
         e.preventDefault();
@@ -120,8 +132,9 @@ export const AuctionDetail: React.FC<AuctionDetailProps> = ({ auctionId, onNavig
 
         try {
             setBidding(true);
+            const actualId = extractIdFromSlug(auctionId);
             const { error } = await supabase.rpc("place_bid", {
-                p_auction_id: auctionId,
+                p_auction_id: actualId,
                 p_amount: amount,
             });
 

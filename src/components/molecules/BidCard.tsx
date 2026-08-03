@@ -127,7 +127,8 @@ export const BidCard: React.FC<BidCardProps> = ({ latestBid, totalActiveBids, on
                                 <button
                                     onClick={() => {
                                         setExpanded(false);
-                                        onNavigate("auction-detail", latestBid.auctionId);
+                                        const slug = `${latestBid.vehicleBrand}-${latestBid.vehicleModel}-${latestBid.auctionId}`.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)+/g, '');
+                                        onNavigate("auction-detail", slug);
                                     }}
                                     className="flex items-center gap-1 text-[9px] font-bold uppercase tracking-wider text-black-main hover:opacity-60 transition-opacity cursor-pointer"
                                 >

@@ -142,7 +142,10 @@ export const Auctions: React.FC<AuctionsProps> = ({ onNavigate }) => {
                                 <div key={auction.id} className="anim-stagger" style={{ animationDelay: `${idx * 100}ms` }}>
                                     <VehicleCard
                                         auction={auction}
-                                        onSelect={(id) => onNavigate("auction-detail", id)}
+                                        onSelect={(id) => {
+                                            const slug = `${auction.vehicle?.brand}-${auction.vehicle?.model}-${id}`.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)+/g, '');
+                                            onNavigate("auction-detail", slug);
+                                        }}
                                     />
                                 </div>
                             ))}

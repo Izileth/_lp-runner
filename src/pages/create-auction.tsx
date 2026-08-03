@@ -4,6 +4,7 @@ import { useAuth } from "../context/AuthContext";
 import PageLayout from "../components/templates/PageLayout";
 import { usePageAnimations } from "../hooks/usePageAnimations";
 import Button from "../components/atoms/Button";
+import { ImageUpload } from "../components/molecules/ImageUpload";
 import type { Route } from "../types";
 import { ArrowLeft } from "lucide-react";
 
@@ -29,7 +30,7 @@ export const CreateAuction: React.FC<CreateAuctionProps> = ({ onNavigate }) => {
     const [condition, setCondition] = useState<"novo" | "semi_novo" | "usado" | "colecionador">("usado");
     const [description, setDescription] = useState("");
     const [startingPrice, setStartingPrice] = useState("");
-    const [imageUrl, setImageUrl] = useState("");
+    const [imageUrls, setImageUrls] = useState<string[]>([]);
 
     // Form Auction fields
     const [startsAt, setStartsAt] = useState("");
@@ -82,14 +83,15 @@ export const CreateAuction: React.FC<CreateAuctionProps> = ({ onNavigate }) => {
 
             if (vehicleError) throw vehicleError;
 
-            // 2. Inserir Imagem (se informada)
-            if (imageUrl.trim()) {
-                await supabase.from("vehicle_images").insert({
+            // 2. Inserir Imagens (se informadas)
+            if (imageUrls.length > 0) {
+                const imagesToInsert = imageUrls.map((url, idx) => ({
                     vehicle_id: vehicleData.id,
-                    url: imageUrl.trim(),
-                    is_cover: true,
-                    position: 0
-                });
+                    url: url,
+                    is_cover: idx === 0,
+                    position: idx
+                }));
+                await supabase.from("vehicle_images").insert(imagesToInsert);
             }
 
             // 3. Criar Leilão
@@ -226,14 +228,8 @@ export const CreateAuction: React.FC<CreateAuctionProps> = ({ onNavigate }) => {
                             </div>
 
                             <div>
-                                <label className="block text-xs font-bold tracking-widest text-gray-sec uppercase mb-2">URL da Imagem de Capa</label>
-                                <input
-                                    type="url"
-                                    placeholder="https://exemplo.com/imagem.jpg"
-                                    value={imageUrl}
-                                    onChange={(e) => setImageUrl(e.target.value)}
-                                    className="w-full bg-white border border-border-main rounded-xl px-4 py-3 text-black-main text-sm focus:border-black-main focus:outline-none transition-colors"
-                                />
+                                <label className="block text-xs font-bold tracking-widest text-gray-sec uppercase mb-2">Imagens do Veículo</label>
+                                <ImageUpload onUploadSuccess={(urls) => setImageUrls(urls)} maxFiles={5} />
                             </div>
 
                             <div>
