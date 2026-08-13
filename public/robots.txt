@@ -1,4 +1,4 @@
 User-agent: *
 Allow: /
 
-Sitemap: https://runnerspace.com/sitemap.xml
+Sitemap: https://runner.xv1.online/sitemap.xml
