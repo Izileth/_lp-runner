@@ -13,6 +13,7 @@ import type { Route } from "./types";
 import { CartProvider } from "./context/CartContext";
 import { AuthProvider } from "./context/AuthContext";
 import { BidProvider } from "./context/BidContext";
+import ErrorBoundary from "./components/organisms/ErrorBoundary";
 
 function AuctionDetailWrapper({ onNavigate }: { onNavigate: (route: Route, itemId?: string) => void }) {
     const { id } = useParams<{ id: string }>();
@@ -64,36 +65,37 @@ function App() {
     };
 
     return (
-        <AuthProvider>
-            <CartProvider>
-                <BidProvider>
-                    <div className="min-h-screen bg-ivory text-black-main relative overflow-hidden">
-                        <Routes>
-                            <RouterRoute path="/" element={<Home onNavigate={handleNavigate} />} />
-                            <RouterRoute path="/login" element={<Login onNavigate={handleNavigate} />} />
-                            <RouterRoute path="/register" element={<Register onNavigate={handleNavigate} />} />
-                            <RouterRoute path="/profile" element={<Profile onNavigate={handleNavigate} />} />
-                            <RouterRoute path="/auctions" element={<Auctions onNavigate={handleNavigate} />} />
-                            <RouterRoute path="/auctions/create" element={<CreateAuction onNavigate={handleNavigate} />} />
-                            <RouterRoute path="/auctions/:id" element={<AuctionDetailWrapper onNavigate={handleNavigate} />} />
-                            <RouterRoute path="*" element={<NotFound onNavigate={handleNavigate} />} />
-                        </Routes>
+        <ErrorBoundary>
+            <AuthProvider>
+                <CartProvider>
+                    <BidProvider>
+                        <div className="min-h-screen bg-ivory text-black-main relative overflow-hidden">
+                            <Routes>
+                                <RouterRoute path="/" element={<Home onNavigate={handleNavigate} />} />
+                                <RouterRoute path="/login" element={<Login onNavigate={handleNavigate} />} />
+                                <RouterRoute path="/register" element={<Register onNavigate={handleNavigate} />} />
+                                <RouterRoute path="/profile" element={<Profile onNavigate={handleNavigate} />} />
+                                <RouterRoute path="/auctions" element={<Auctions onNavigate={handleNavigate} />} />
+                                <RouterRoute path="/auctions/create" element={<CreateAuction onNavigate={handleNavigate} />} />
+                                <RouterRoute path="/auctions/:id" element={<AuctionDetailWrapper onNavigate={handleNavigate} />} />
+                                <RouterRoute path="*" element={<NotFound onNavigate={handleNavigate} />} />
+                            </Routes>
 
-                        {/* GSAP Page Transition Curtain Overlay */}
-                        <div
-                            ref={overlayRef}
-                            className="fixed inset-0 z-50 bg-black-main pointer-events-none transform translate-y-full flex items-center justify-center"
-                        >
-                            <div className="text-ivory text-2xl font-extrabold tracking-widest uppercase font-display flex items-center gap-[1px]">
-                                <span className="inline-block scale-x-[-1]">R</span>
-                                <span>unner</span>
+                            {/* GSAP Page Transition Curtain Overlay */}
+                            <div
+                                ref={overlayRef}
+                                className="fixed inset-0 z-50 bg-black-main pointer-events-none transform translate-y-full flex items-center justify-center"
+                            >
+                                <div className="text-ivory text-2xl font-extrabold tracking-widest uppercase font-display flex items-center gap-[1px]">
+                                    <span className="inline-block scale-x-[-1]">R</span>
+                                    <span>unner</span>
+                                </div>
                             </div>
                         </div>
-                    </div>
-                </BidProvider>
-            </CartProvider>
-        </AuthProvider>
-    );
+                    </BidProvider>
+                </CartProvider>
+            </AuthProvider>
+        </ErrorBoundary>
 }
 
 export default App;

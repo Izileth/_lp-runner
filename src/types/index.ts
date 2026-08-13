@@ -97,3 +97,18 @@ export interface CartItem {
     details?: string;
 }
 
+// --- Generic Error Types ---
+export type ErrorSeverity = "info" | "warning" | "error" | "critical";
+
+export interface AppError {
+    message: string;
+    code?: string;
+    severity?: ErrorSeverity;
+    details?: Record<string, unknown>;
+}
+
+export interface ApiErrorResponse {
+    success: false;
+    error: AppError;
+    status: number;
+}
