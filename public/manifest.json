@@ -1,7 +1,7 @@
 {
-  "name": "Runner Space",
-  "short_name": "RunnerSpace",
-  "description": "Premium Sneaker Landing Page",
+  "name": "Runner Street",
+  "short_name": "RunnerStreet",
+  "description": "Premium Car Landing Page",
   "start_url": "/",
   "display": "standalone",
   "background_color": "#000000",

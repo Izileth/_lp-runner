@@ -8,6 +8,7 @@ import Profile from "./pages/profile";
 import { Auctions } from "./pages/auctions";
 import { CreateAuction } from "./pages/create-auction";
 import { AuctionDetail } from "./pages/auction-detail";
+import NotFound from "./pages/not-found";
 import type { Route } from "./types";
 import { CartProvider } from "./context/CartContext";
 import { AuthProvider } from "./context/AuthContext";
@@ -33,6 +34,7 @@ function App() {
             auctions: "/auctions",
             "create-auction": "/auctions/create",
             "auction-detail": itemId ? `/auctions/${itemId}` : "/auctions",
+            "not-found": "/404",
         };
         const targetPath = paths[route] || "/";
 
@@ -74,7 +76,7 @@ function App() {
                             <RouterRoute path="/auctions" element={<Auctions onNavigate={handleNavigate} />} />
                             <RouterRoute path="/auctions/create" element={<CreateAuction onNavigate={handleNavigate} />} />
                             <RouterRoute path="/auctions/:id" element={<AuctionDetailWrapper onNavigate={handleNavigate} />} />
-                            <RouterRoute path="*" element={<Home onNavigate={handleNavigate} />} />
+                            <RouterRoute path="*" element={<NotFound onNavigate={handleNavigate} />} />
                         </Routes>
 
                         {/* GSAP Page Transition Curtain Overlay */}
