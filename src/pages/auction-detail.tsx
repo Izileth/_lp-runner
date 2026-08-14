@@ -1,13 +1,13 @@
-import React, { useEffect, useState, useRef } from "react";
+import React, { useEffect, useState, useRef, useCallback } from "react";
 import { supabase } from "../lib/supabase";
 import { useAuth } from "../context/AuthContext";
 import PageLayout from "../components/templates/PageLayout";
 import { usePageAnimations } from "../hooks/usePageAnimations";
-//import { AuctionDetailSkeletonLoader, AuctionErrorState } from "../components/molecules/AuctionLoaders";
+import { AuctionDetailSkeletonLoader, AuctionErrorState } from "../components/molecules/AuctionLoaders";
 import Button from "../components/atoms/Button";
 import FloatingPill from "../components/atoms/FloatingPill";
 import type { Auction, Bid, Route } from "../types";
-import { ArrowLeft } from "lucide-react";
+import { ArrowLeft, ChevronLeft, ChevronRight } from "lucide-react";
 
 import { extractIdFromSlug } from "../lib/utils";
 
@@ -15,6 +15,9 @@ interface AuctionDetailProps {
     auctionId: string;
     onNavigate: (route: Route, itemId?: string) => void;
 }
+
+const FALLBACK_IMAGE =
+    "https://images.unsplash.com/photo-1503376780353-7e6692767b70?auto=format&fit=crop&w=1000&q=80";
 
 export const AuctionDetail: React.FC<AuctionDetailProps> = ({ auctionId, onNavigate }) => {
     const pageRef = useRef<HTMLDivElement>(null);
@@ -24,16 +27,18 @@ export const AuctionDetail: React.FC<AuctionDetailProps> = ({ auctionId, onNavig
     const [auction, setAuction] = useState<Auction | null>(null);
     const [bids, setBids] = useState<Bid[]>([]);
     const [bidAmount, setBidAmount] = useState<string>("");
-    //  const [ setLoading] = useState(true);
-    // const [ setFetchError] = useState<string | null>(null);
+    const [loading, setLoading] = useState(true);
+    const [fetchError, setFetchError] = useState<string | null>(null);
     const [bidding, setBidding] = useState(false);
     const [message, setMessage] = useState<{ type: "success" | "error"; text: string } | null>(null);
 
+    // Índice da imagem ativa na galeria (o veículo pode ter várias fotos vindas do banco)
+    const [activeImageIndex, setActiveImageIndex] = useState<number>(0);
     // Carregar dados do leilão e histórico de lances
-    const fetchAuctionData = async () => {
+    const fetchAuctionData = useCallback(async (isInitialLoad = false) => {
         try {
-            // setLoading(true);
-            //  setFetchError(null);
+            if (isInitialLoad) setLoading(true);
+            setFetchError(null);
 
             const actualId = extractIdFromSlug(auctionId);
             const { data: auctionData, error: auctionError } = await supabase
@@ -68,24 +73,14 @@ export const AuctionDetail: React.FC<AuctionDetailProps> = ({ auctionId, onNavig
             setBids(bidsData || []);
         } catch (err: unknown) {
             console.error("Erro ao carregar leilão:", err);
-            //setFetchError(err instanceof Error ? err.message : "Não foi possível carregar os detalhes do leilão.");
+            setFetchError(err instanceof Error ? err.message : "Não foi possível carregar os detalhes do leilão.");
         } finally {
-            // setLoading(false);
+            if (isInitialLoad) setLoading(false);
         }
-    };
+    }, [auctionId]);
 
     useEffect(() => {
         if (!auctionId) return;
-
-        const loadAuctionData = async () => {
-            try {
-                await fetchAuctionData();
-            } catch (err) {
-                console.error("Erro ao carregar o leilão na effect:", err);
-            }
-        };
-
-        loadAuctionData();
 
         const actualId = extractIdFromSlug(auctionId);
         const bidsSubscription = supabase
@@ -105,7 +100,7 @@ export const AuctionDetail: React.FC<AuctionDetailProps> = ({ auctionId, onNavig
         return () => {
             supabase.removeChannel(bidsSubscription);
         };
-    }, [auctionId]);
+    }, [auctionId, fetchAuctionData]);
 
     useEffect(() => {
         if (auction?.vehicle) {
@@ -114,6 +109,39 @@ export const AuctionDetail: React.FC<AuctionDetailProps> = ({ auctionId, onNavig
             document.title = "Leilão de Veículo - lp-space";
         }
     }, [auction]);
+
+    const vehicle = auction?.vehicle;
+
+    // Lista de imagens ordenada: capa primeiro (se marcada), depois as demais.
+    // Um veículo pode ter várias fotos (5+) vindas de vehicle_images.
+    const galleryImages = React.useMemo(() => {
+        const images = vehicle?.images ?? [];
+        if (images.length === 0) return [FALLBACK_IMAGE];
+
+        const cover = images.find((img) => img.is_cover);
+        const rest = images.filter((img) => img !== cover);
+        return [...(cover ? [cover] : []), ...rest].map((img) => img.url);
+    }, [vehicle?.images]);
+
+    const safeActiveImageIndex = galleryImages.length === 0 ? 0 : activeImageIndex % galleryImages.length;
+
+    const currentImage = galleryImages[safeActiveImageIndex] || FALLBACK_IMAGE;
+
+    const goToPrevImage = () => {
+        setActiveImageIndex((prev) => {
+            if (galleryImages.length === 0) return 0;
+            return (prev - 1 + galleryImages.length) % galleryImages.length;
+        });
+    };
+
+    const goToNextImage = () => {
+        setActiveImageIndex((prev) => {
+            if (galleryImages.length === 0) return 0;
+            return (prev + 1) % galleryImages.length;
+        });
+    };
+
+    const minAllowed = auction && vehicle ? (auction.current_price || vehicle.starting_price) + auction.min_increment : 0;
 
     const handlePlaceBid = async (e: React.FormEvent) => {
         e.preventDefault();
@@ -127,6 +155,14 @@ export const AuctionDetail: React.FC<AuctionDetailProps> = ({ auctionId, onNavig
         const amount = Number(bidAmount);
         if (!amount || isNaN(amount)) {
             setMessage({ type: "error", text: "Insira um valor válido." });
+            return;
+        }
+
+        if (amount < minAllowed) {
+            setMessage({
+                type: "error",
+                text: `O lance mínimo é R$ ${minAllowed.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}.`,
+            });
             return;
         }
 
@@ -149,17 +185,30 @@ export const AuctionDetail: React.FC<AuctionDetailProps> = ({ auctionId, onNavig
         }
     };
 
-    const vehicle = auction?.vehicle;
-    const coverImage = vehicle?.images?.find((img) => img.is_cover)?.url ||
-        vehicle?.images?.[0]?.url ||
-        "https://images.unsplash.com/photo-1503376780353-7e6692767b70?auto=format&fit=crop&w=1000&q=80";
+    if (loading) {
+        return (
+            <PageLayout onNavigate={onNavigate} currentRoute="auction-detail">
+                <AuctionDetailSkeletonLoader />
+            </PageLayout>
+        );
+    }
 
-    const minAllowed = auction && vehicle ? (auction.current_price || vehicle.starting_price) + auction.min_increment : 0;
+    if (fetchError || !auction) {
+        return (
+            <PageLayout onNavigate={onNavigate} currentRoute="auction-detail">
+                <AuctionErrorState
+                    message={fetchError || "Leilão não encontrado."}
+                    onRetry={() => fetchAuctionData(true)}
+                    onBack={() => onNavigate("auctions")}
+                />
+            </PageLayout>
+        );
+    }
 
     return (
         <PageLayout onNavigate={onNavigate} currentRoute="auction-detail">
             <section ref={pageRef} className="relative w-full overflow-hidden">
-                {/* ---------- WORDMARK + PRODUCT IMAGE ---------- */}
+                {/* ---------- WORDMARK + PRODUCT IMAGE GALLERY ---------- */}
                 <div className="relative flex items-center justify-center px-4 min-h-[280px] sm:min-h-[380px] lg:min-h-[460px]">
                     {/* Decorative floating pills */}
                     <FloatingPill className="left-[8%] top-[18%] w-10 h-6 sm:w-14 sm:h-8 rotate-[-20deg] floating-pill" />
@@ -176,14 +225,63 @@ export const AuctionDetail: React.FC<AuctionDetailProps> = ({ auctionId, onNavig
                     </h1>
 
                     {/* Product image, centered on top of the wordmark */}
-                    <div className="relative z-10 w-[70%] sm:w-[50%] lg:w-[40%] aspect-[16/9] flex items-center justify-center anim-fade-up">
+                    <div className="relative z-10 w-[70%] sm:w-[50%] lg:w-[40%] aspect-[16/9] flex items-center justify-center anim-fade-up group">
                         <img
-                            src={coverImage}
-                            alt={vehicle?.model}
+                            src={currentImage}
+                            alt={vehicle?.model || "Veículo"}
                             className="w-full h-full object-cover rounded-xl shadow-2xl drop-shadow-[0_15px_25px_rgba(0,0,0,0.15)] grayscale hover:grayscale-0 transition-all duration-700"
                         />
+
+                        {galleryImages.length > 1 && (
+                            <>
+                                <button
+                                    type="button"
+                                    onClick={goToPrevImage}
+                                    aria-label="Imagem anterior"
+                                    className="absolute left-2 top-1/2 -translate-y-1/2 z-20 bg-white/80 hover:bg-white rounded-full p-1.5 shadow-md opacity-0 group-hover:opacity-100 transition-opacity"
+                                >
+                                    <ChevronLeft className="w-4 h-4 text-black-main" />
+                                </button>
+                                <button
+                                    type="button"
+                                    onClick={goToNextImage}
+                                    aria-label="Próxima imagem"
+                                    className="absolute right-2 top-1/2 -translate-y-1/2 z-20 bg-white/80 hover:bg-white rounded-full p-1.5 shadow-md opacity-0 group-hover:opacity-100 transition-opacity"
+                                >
+                                    <ChevronRight className="w-4 h-4 text-black-main" />
+                                </button>
+
+                                <div className="absolute bottom-2 left-1/2 -translate-x-1/2 z-20 flex gap-1.5">
+                                    {galleryImages.map((_, idx) => (
+                                        <button
+                                            key={idx}
+                                            type="button"
+                                            aria-label={`Ver imagem ${idx + 1}`}
+                                            onClick={() => setActiveImageIndex(idx)}
+                                            className={`w-1.5 h-1.5 rounded-full transition-all ${idx === activeImageIndex ? "bg-black-main w-4" : "bg-black-main/30"}`}
+                                        />
+                                    ))}
+                                </div>
+                            </>
+                        )}
                     </div>
                 </div>
+
+                {/* ---------- THUMBNAIL STRIP (só aparece se houver mais de uma imagem) ---------- */}
+                {galleryImages.length > 1 && (
+                    <div className="flex items-center justify-center gap-2 px-4 pb-6 flex-wrap">
+                        {galleryImages.map((src, idx) => (
+                            <button
+                                key={idx}
+                                type="button"
+                                onClick={() => setActiveImageIndex(idx)}
+                                className={`w-14 h-10 sm:w-16 sm:h-12 rounded-md overflow-hidden border-2 transition-all ${idx === activeImageIndex ? "border-black-main" : "border-transparent opacity-60 hover:opacity-100"}`}
+                            >
+                                <img src={src} alt={`${vehicle?.model || "Veículo"} - foto ${idx + 1}`} className="w-full h-full object-cover" />
+                            </button>
+                        ))}
+                    </div>
+                )}
 
                 {/* ---------- PRODUCT INFO BAR ---------- */}
                 <div className="relative z-20 px-6 sm:px-10 lg:px-14 pb-10 sm:pb-14 max-w-7xl mx-auto">
