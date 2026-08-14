@@ -34,6 +34,7 @@ export const AuctionDetail: React.FC<AuctionDetailProps> = ({ auctionId, onNavig
 
     // Índice da imagem ativa na galeria (o veículo pode ter várias fotos vindas do banco)
     const [activeImageIndex, setActiveImageIndex] = useState<number>(0);
+
     // Carregar dados do leilão e histórico de lances
     const fetchAuctionData = useCallback(async (isInitialLoad = false) => {
         try {
@@ -79,8 +80,15 @@ export const AuctionDetail: React.FC<AuctionDetailProps> = ({ auctionId, onNavig
         }
     }, [auctionId]);
 
+    // FIX: a busca inicial (fetchAuctionData(true)) estava faltando aqui.
+    // O effect só registrava a subscription do Realtime, que só dispara em
+    // eventos futuros de INSERT/UPDATE — nada chamava o banco no mount,
+    // então `loading` (iniciado como true) nunca virava false: loader infinito.
     useEffect(() => {
         if (!auctionId) return;
+
+        setActiveImageIndex(0);
+        fetchAuctionData(true);
 
         const actualId = extractIdFromSlug(auctionId);
         const bidsSubscription = supabase
@@ -258,7 +266,7 @@ export const AuctionDetail: React.FC<AuctionDetailProps> = ({ auctionId, onNavig
                                             type="button"
                                             aria-label={`Ver imagem ${idx + 1}`}
                                             onClick={() => setActiveImageIndex(idx)}
-                                            className={`w-1.5 h-1.5 rounded-full transition-all ${idx === activeImageIndex ? "bg-black-main w-4" : "bg-black-main/30"}`}
+                                            className={`w-1.5 h-1.5 rounded-full transition-all ${idx === safeActiveImageIndex ? "bg-black-main w-4" : "bg-black-main/30"}`}
                                         />
                                     ))}
                                 </div>
@@ -275,7 +283,7 @@ export const AuctionDetail: React.FC<AuctionDetailProps> = ({ auctionId, onNavig
                                 key={idx}
                                 type="button"
                                 onClick={() => setActiveImageIndex(idx)}
-                                className={`w-14 h-10 sm:w-16 sm:h-12 rounded-md overflow-hidden border-2 transition-all ${idx === activeImageIndex ? "border-black-main" : "border-transparent opacity-60 hover:opacity-100"}`}
+                                className={`w-14 h-10 sm:w-16 sm:h-12 rounded-md overflow-hidden border-2 transition-all ${idx === safeActiveImageIndex ? "border-black-main" : "border-transparent opacity-60 hover:opacity-100"}`}
                             >
                                 <img src={src} alt={`${vehicle?.model || "Veículo"} - foto ${idx + 1}`} className="w-full h-full object-cover" />
                             </button>
