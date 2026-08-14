@@ -28,7 +28,7 @@ export const Profile: React.FC<ProfileProps> = ({ onNavigate }) => {
     const { user, signOut, loading: authLoading } = useAuth();
 
     const [fullName, setFullName] = useState("");
-    const [email, setEmail] = useState("");
+    const [email] = useState(user?.email || "");
     const [cpfCnpj, setCpfCnpj] = useState("");
     const [phone, setPhone] = useState("");
     const [avatarUrl, setAvatarUrl] = useState("");
@@ -52,9 +52,7 @@ export const Profile: React.FC<ProfileProps> = ({ onNavigate }) => {
     // Fetch profile data
     useEffect(() => {
         if (!user) return;
-
-        setEmail(user.email || "");
-
+        
         const fetchProfile = async () => {
             try {
                 setLoading(true);
