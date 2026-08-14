@@ -165,10 +165,10 @@ export const Profile: React.FC<ProfileProps> = ({ onNavigate }) => {
                     { scale: 1, duration: 0.4, ease: "back.out(1.5)" }
                 );
             }
-        } catch (err: any) {
+        } catch (err: unknown) {
             setMessage({
                 type: "error",
-                text: err?.message || "Falha ao atualizar o perfil. Tente novamente.",
+                text: err instanceof Error ? err.message : "Falha ao atualizar o perfil. Tente novamente.",
             });
         } finally {
             setSaving(false);

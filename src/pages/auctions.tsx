@@ -44,16 +44,58 @@ export const Auctions: React.FC<AuctionsProps> = ({ onNavigate }) => {
             if (err) throw err;
 
             setAuctions(data || []);
-        } catch (err: any) {
+        } catch (err: unknown) {
             console.error("Erro ao buscar leilões:", err);
-            setError(err.message || "Não foi possível carregar a lista de leilões.");
+            setError(err instanceof Error ? err.message : "Não foi possível carregar a lista de leilões.");
         } finally {
             setLoading(false);
         }
     };
 
     useEffect(() => {
-        fetchAuctions();
+        let active = true;
+
+        const loadAuctions = async () => {
+            try {
+                setLoading(true);
+                setError(null);
+
+                let query = supabase
+                    .from("auctions")
+                    .select(`
+                        *,
+                        vehicle:vehicles(
+                            *,
+                            images:vehicle_images(*)
+                        )
+                    `)
+                    .order("created_at", { ascending: false });
+
+                if (filter !== "todos") {
+                    query = query.eq("status", filter);
+                }
+
+                const { data, error: err } = await query;
+                if (err) throw err;
+
+                if (!active) return;
+                setAuctions(data || []);
+            } catch (err: unknown) {
+                if (!active) return;
+                console.error("Erro ao buscar leilões:", err);
+                setError(err instanceof Error ? err.message : "Não foi possível carregar a lista de leilões.");
+            } finally {
+                if (active) {
+                    setLoading(false);
+                }
+            }
+        };
+
+        void loadAuctions();
+
+        return () => {
+            active = false;
+        };
     }, [filter]);
 
     return (

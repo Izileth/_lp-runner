@@ -66,9 +66,9 @@ export const AuctionDetail: React.FC<AuctionDetailProps> = ({ auctionId, onNavig
 
             if (bidsError) throw bidsError;
             setBids(bidsData || []);
-        } catch (err: any) {
+        } catch (err: unknown) {
             console.error("Erro ao carregar leilão:", err);
-            //setFetchError(err.message || "Não foi possível carregar os detalhes do leilão.");
+            //setFetchError(err instanceof Error ? err.message : "Não foi possível carregar os detalhes do leilão.");
         } finally {
             // setLoading(false);
         }
@@ -141,9 +141,9 @@ export const AuctionDetail: React.FC<AuctionDetailProps> = ({ auctionId, onNavig
             if (error) throw error;
             setMessage({ type: "success", text: "Lance realizado com sucesso!" });
             fetchAuctionData();
-        } catch (err: any) {
+        } catch (err: unknown) {
             console.error("Erro ao dar lance:", err);
-            setMessage({ type: "error", text: err.message || "Falha ao enviar lance." });
+            setMessage({ type: "error", text: err instanceof Error ? err.message : "Falha ao enviar lance." });
         } finally {
             setBidding(false);
         }

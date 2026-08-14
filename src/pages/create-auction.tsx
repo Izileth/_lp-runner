@@ -109,9 +109,9 @@ export const CreateAuction: React.FC<CreateAuctionProps> = ({ onNavigate }) => {
             if (auctionError) throw auctionError;
 
             onNavigate("auctions");
-        } catch (err: any) {
+        } catch (err: unknown) {
             console.error("Erro ao criar leilão:", err);
-            setError(err.message || "Ocorreu um erro ao cadastrar o leilão.");
+            setError(err instanceof Error ? err.message : "Ocorreu um erro ao cadastrar o leilão.");
         } finally {
             setLoading(false);
         }
@@ -216,7 +216,7 @@ export const CreateAuction: React.FC<CreateAuctionProps> = ({ onNavigate }) => {
                                     <label className="block text-xs font-bold tracking-widest text-gray-sec uppercase mb-2">Condição</label>
                                     <select
                                         value={condition}
-                                        onChange={(e) => setCondition(e.target.value as any)}
+                                        onChange={(e) => setCondition(e.target.value as "novo" | "semi_novo" | "usado" | "colecionador")}
                                         className="w-full bg-white border border-border-main rounded-xl px-4 py-3 text-black-main text-sm focus:border-black-main focus:outline-none transition-colors"
                                     >
                                         <option value="usado">Usado</option>

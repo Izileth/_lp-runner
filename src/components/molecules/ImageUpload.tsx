@@ -51,9 +51,9 @@ export const ImageUpload: React.FC<ImageUploadProps> = ({ onUploadSuccess, maxFi
             const updatedUrls = [...previewUrls, ...newUrls];
             setPreviewUrls(updatedUrls);
             onUploadSuccess(updatedUrls);
-        } catch (err: any) {
+        } catch (err: unknown) {
             console.error("Erro no upload de imagem:", err);
-            setError(err.message || "Ocorreu um erro ao enviar a imagem.");
+            setError(err instanceof Error ? err.message : "Ocorreu um erro ao enviar a imagem.");
         } finally {
             setUploading(false);
             // Reset input so the same files can be selected again if needed
