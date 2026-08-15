@@ -16,6 +16,7 @@ interface AuctionDetailProps {
     onNavigate: (route: Route, itemId?: string) => void;
 }
 
+
 const FALLBACK_IMAGE =
     "https://images.unsplash.com/photo-1503376780353-7e6692767b70?auto=format&fit=crop&w=1000&q=80";
 
@@ -87,6 +88,7 @@ export const AuctionDetail: React.FC<AuctionDetailProps> = ({ auctionId, onNavig
     useEffect(() => {
         if (!auctionId) return;
 
+        // eslint-disable-next-line react-hooks/set-state-in-effect
         setActiveImageIndex(0);
         fetchAuctionData(true);
 
@@ -119,7 +121,7 @@ export const AuctionDetail: React.FC<AuctionDetailProps> = ({ auctionId, onNavig
     }, [auction]);
 
     const vehicle = auction?.vehicle;
-
+    
     // Lista de imagens ordenada: capa primeiro (se marcada), depois as demais.
     // Um veículo pode ter várias fotos (5+) vindas de vehicle_images.
     const galleryImages = React.useMemo(() => {
@@ -224,54 +226,61 @@ export const AuctionDetail: React.FC<AuctionDetailProps> = ({ auctionId, onNavig
                     <FloatingPill className="right-[10%] top-[12%] w-10 h-6 sm:w-14 sm:h-8 rotate-[25deg] floating-pill" />
                     <FloatingPill className="right-[22%] bottom-[15%] w-8 h-5 sm:w-11 sm:h-7 rotate-[-10deg] blur-[1px] floating-pill" />
 
-                    {/* Wordmark */}
+                    {/* Wordmark (Behind) */}
                     <h1
-                        className="select-none text-[20vw] sm:text-[16vw] lg:text-[11vw] leading-[0.8] text-black-main whitespace-nowrap font-display uppercase anim-title absolute z-0 opacity-[0.03]"
-                        style={{ letterSpacing: "-0.03em" }}
+                        className="select-none text-[22vw] sm:text-[18vw] lg:text-[14vw] leading-[0.8] text-transparent whitespace-nowrap font-display uppercase anim-title absolute z-0 top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 pointer-events-none"
+                        style={{ WebkitTextStroke: "2px rgba(0, 0, 0, 0.08)", letterSpacing: "-0.04em" }}
                     >
                         {vehicle?.brand}
                     </h1>
 
                     {/* Product image, centered on top of the wordmark */}
-                    <div className="relative z-10 w-[70%] sm:w-[50%] lg:w-[40%] aspect-[16/9] flex items-center justify-center anim-fade-up group">
-                        <img
-                            src={currentImage}
-                            alt={vehicle?.model || "Veículo"}
-                            className="w-full h-full object-cover rounded-xl shadow-2xl drop-shadow-[0_15px_25px_rgba(0,0,0,0.15)] grayscale hover:grayscale-0 transition-all duration-700"
-                        />
+                    <div className="relative z-10 flex flex-col items-center w-[70%] sm:w-[50%] lg:w-[40%] anim-fade-up group">
+                        <div className="relative w-full aspect-[16/9] flex items-center justify-center">
+                            <img
+                                src={currentImage}
+                                alt={vehicle?.model || "Veículo"}
+                                className="w-full h-full object-cover rounded-xl shadow-2xl drop-shadow-[0_15px_25px_rgba(0,0,0,0.15)] grayscale hover:grayscale-0 transition-all duration-700"
+                            />
 
-                        {galleryImages.length > 1 && (
-                            <>
-                                <button
-                                    type="button"
-                                    onClick={goToPrevImage}
-                                    aria-label="Imagem anterior"
-                                    className="absolute left-2 top-1/2 -translate-y-1/2 z-20 bg-white/80 hover:bg-white rounded-full p-1.5 shadow-md opacity-0 group-hover:opacity-100 transition-opacity"
-                                >
-                                    <ChevronLeft className="w-4 h-4 text-black-main" />
-                                </button>
-                                <button
-                                    type="button"
-                                    onClick={goToNextImage}
-                                    aria-label="Próxima imagem"
-                                    className="absolute right-2 top-1/2 -translate-y-1/2 z-20 bg-white/80 hover:bg-white rounded-full p-1.5 shadow-md opacity-0 group-hover:opacity-100 transition-opacity"
-                                >
-                                    <ChevronRight className="w-4 h-4 text-black-main" />
-                                </button>
+                            {galleryImages.length > 1 && (
+                                <>
+                                    <button
+                                        type="button"
+                                        onClick={goToPrevImage}
+                                        aria-label="Imagem anterior"
+                                        className="absolute left-2 top-1/2 -translate-y-1/2 z-20 bg-white/80 hover:bg-white rounded-full p-1.5 shadow-md opacity-0 group-hover:opacity-100 transition-opacity"
+                                    >
+                                        <ChevronLeft className="w-4 h-4 text-black-main" />
+                                    </button>
+                                    <button
+                                        type="button"
+                                        onClick={goToNextImage}
+                                        aria-label="Próxima imagem"
+                                        className="absolute right-2 top-1/2 -translate-y-1/2 z-20 bg-white/80 hover:bg-white rounded-full p-1.5 shadow-md opacity-0 group-hover:opacity-100 transition-opacity"
+                                    >
+                                        <ChevronRight className="w-4 h-4 text-black-main" />
+                                    </button>
 
-                                <div className="absolute bottom-2 left-1/2 -translate-x-1/2 z-20 flex gap-1.5">
-                                    {galleryImages.map((_, idx) => (
-                                        <button
-                                            key={idx}
-                                            type="button"
-                                            aria-label={`Ver imagem ${idx + 1}`}
-                                            onClick={() => setActiveImageIndex(idx)}
-                                            className={`w-1.5 h-1.5 rounded-full transition-all ${idx === safeActiveImageIndex ? "bg-black-main w-4" : "bg-black-main/30"}`}
-                                        />
-                                    ))}
-                                </div>
-                            </>
-                        )}
+                                    <div className="absolute bottom-2 left-1/2 -translate-x-1/2 z-20 flex gap-1.5">
+                                        {galleryImages.map((_, idx) => (
+                                            <button
+                                                key={idx}
+                                                type="button"
+                                                aria-label={`Ver imagem ${idx + 1}`}
+                                                onClick={() => setActiveImageIndex(idx)}
+                                                className={`w-1.5 h-1.5 rounded-full transition-all ${idx === safeActiveImageIndex ? "bg-black-main w-4" : "bg-black-main/30"}`}
+                                            />
+                                        ))}
+                                    </div>
+                                </>
+                            )}
+                        </div>
+
+                        {/* Brand text directly below image */}
+                        <div className="mt-6 inline-flex items-center justify-center px-5 py-2 bg-white/80 backdrop-blur-sm shadow-sm border border-border-main rounded-full transform transition-transform hover:scale-105">
+                            <span className="text-[11px] font-bold tracking-widest text-black-main uppercase">{vehicle?.brand}</span>
+                        </div>
                     </div>
                 </div>
 
