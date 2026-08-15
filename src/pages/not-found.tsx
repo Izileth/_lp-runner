@@ -8,7 +8,6 @@ import type { Route } from "../types";
 interface NotFoundProps {
     onNavigate: (route: Route) => void;
 }
-
 export const NotFound: React.FC<NotFoundProps> = ({ onNavigate }) => {
     const containerRef = useRef<HTMLDivElement>(null);
 
