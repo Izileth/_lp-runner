@@ -153,6 +153,12 @@ export const AuctionDetail: React.FC<AuctionDetailProps> = ({ auctionId, onNavig
 
     const minAllowed = auction && vehicle ? (auction.current_price || vehicle.starting_price) + auction.min_increment : 0;
 
+    const isEnded = auction?.status === "encerrado";
+    const hasBids = bids.length > 0;
+    const winningBid = hasBids ? bids[0] : null;
+    const isWinner = user && winningBid && winningBid.bidder_id === user.id;
+    const isLoser = user && !isWinner && bids.some(b => b.bidder_id === user.id);
+
     const handlePlaceBid = async (e: React.FormEvent) => {
         e.preventDefault();
         setMessage(null);
@@ -350,25 +356,51 @@ export const AuctionDetail: React.FC<AuctionDetailProps> = ({ auctionId, onNavig
                         {/* Bidding Block */}
                         <div className="w-full lg:w-[400px] shrink-0">
                             <div className="bg-card-bg border border-border-main rounded-xl p-6 shadow-xl">
-                                <div className="mb-6 pb-6 border-b border-border-main">
-                                    <p className="text-[10px] font-bold tracking-widest uppercase text-gray-sec mb-1">
-                                        Lance Atual
-                                    </p>
-                                    <p className="text-4xl font-black text-black-main font-display tracking-tight">
-                                        R$ {(auction?.current_price || vehicle?.starting_price)?.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}
-                                    </p>
-                                    <span className="text-[10px] font-medium text-gray-sec mt-1 block">
-                                        Incremento mínimo: R$ {auction?.min_increment?.toLocaleString('pt-BR')}
-                                    </span>
-                                </div>
+                                {isEnded ? (
+                                    <div className="mb-6 pb-6 border-b border-border-main">
+                                        <div className="p-4 rounded-md bg-gray-100 border border-border-main text-center text-gray-sec text-[10px] font-bold uppercase tracking-widest mb-4">
+                                            Leilão {auction?.status}
+                                        </div>
+                                        
+                                        {isWinner && (
+                                            <div className="p-4 rounded-lg bg-green-50 text-green-700 border border-green-200 text-xs font-bold mb-4 text-center">
+                                                🎉 Parabéns! Você arrematou este veículo!
+                                            </div>
+                                        )}
+                                        {isLoser && (
+                                            <div className="p-4 rounded-lg bg-blue-50 text-blue-700 border border-blue-200 text-xs font-bold mb-4 text-center">
+                                                Que pena, seu lance foi superado. Continue tentando em outros leilões!
+                                            </div>
+                                        )}
 
-                                {message && (
+                                        <p className="text-[10px] font-bold tracking-widest uppercase text-gray-sec mb-1 mt-4">
+                                            Valor de Arremate
+                                        </p>
+                                        <p className="text-4xl font-black text-black-main font-display tracking-tight">
+                                            R$ {(auction?.current_price || vehicle?.starting_price)?.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}
+                                        </p>
+                                    </div>
+                                ) : (
+                                    <div className="mb-6 pb-6 border-b border-border-main">
+                                        <p className="text-[10px] font-bold tracking-widest uppercase text-gray-sec mb-1">
+                                            Lance Atual
+                                        </p>
+                                        <p className="text-4xl font-black text-black-main font-display tracking-tight">
+                                            R$ {(auction?.current_price || vehicle?.starting_price)?.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}
+                                        </p>
+                                        <span className="text-[10px] font-medium text-gray-sec mt-1 block">
+                                            Incremento mínimo: R$ {auction?.min_increment?.toLocaleString('pt-BR')}
+                                        </span>
+                                    </div>
+                                )}
+
+                                {!isEnded && message && (
                                     <div className={`p-4 rounded-lg text-xs font-bold mb-6 ${message.type === "success" ? "bg-green-50 text-green-700 border border-green-200" : "bg-red-50 text-red-700 border border-red-200"}`}>
                                         {message.text}
                                     </div>
                                 )}
 
-                                {auction?.status === "ativo" ? (
+                                {!isEnded && auction?.status === "ativo" ? (
                                     <form onSubmit={handlePlaceBid} className="space-y-4">
                                         <div>
                                             <label className="block text-[9px] font-bold tracking-widest text-gray-sec uppercase mb-2">Seu Lance (R$)</label>
@@ -391,9 +423,11 @@ export const AuctionDetail: React.FC<AuctionDetailProps> = ({ auctionId, onNavig
                                         </Button>
                                     </form>
                                 ) : (
-                                    <div className="p-4 rounded-md bg-gray-100 border border-border-main text-center text-gray-sec text-[10px] font-bold uppercase tracking-widest">
-                                        Leilão {auction?.status}
-                                    </div>
+                                    !isEnded && (
+                                        <div className="p-4 rounded-md bg-gray-100 border border-border-main text-center text-gray-sec text-[10px] font-bold uppercase tracking-widest">
+                                            Leilão {auction?.status}
+                                        </div>
+                                    )
                                 )}
                             </div>
 
