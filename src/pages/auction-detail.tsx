@@ -153,8 +153,14 @@ export const AuctionDetail: React.FC<AuctionDetailProps> = ({ auctionId, onNavig
 
     const minAllowed = auction && vehicle ? (auction.current_price || vehicle.starting_price) + auction.min_increment : 0;
 
+    const [currentTime, setCurrentTime] = useState(new Date());
+    useEffect(() => {
+        const timer = setInterval(() => setCurrentTime(new Date()), 1000);
+        return () => clearInterval(timer);
+    }, []);
+
     // Considera encerrado se o status for "encerrado" OU se o tempo atual já ultrapassou o `ends_at`
-    const isTimeExpired = auction?.ends_at ? new Date() >= new Date(auction.ends_at) : false;
+    const isTimeExpired = auction?.ends_at ? currentTime >= new Date(auction.ends_at) : false;
     const isEnded = auction?.status === "encerrado" || isTimeExpired;
 
     const hasBids = bids.length > 0;

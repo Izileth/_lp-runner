@@ -24,10 +24,17 @@ function formatTimeLeft(endsAt: string): string {
 
 export const BidCard: React.FC<BidCardProps> = ({ latestBid, totalActiveBids, onNavigate }) => {
     const [expanded, setExpanded] = useState(false);
+    const [currentTime, setCurrentTime] = useState(Date.now());
+
+    React.useEffect(() => {
+        const timer = setInterval(() => setCurrentTime(Date.now()), 1000);
+        return () => clearInterval(timer);
+    }, []);
 
     if (!latestBid) return null;
 
     const isWinning = latestBid.isWinning;
+    const isEnded = latestBid.auctionStatus === "encerrado" || new Date(latestBid.endsAt).getTime() - currentTime <= 0;
 
     return (
         <div className="relative">
@@ -42,11 +49,11 @@ export const BidCard: React.FC<BidCardProps> = ({ latestBid, totalActiveBids, on
                     }
                     group
                 `}
-                aria-label="Meus lances ativos"
+                aria-label="Meus lances"
             >
                 <Gavel className="w-3 h-3 shrink-0" />
                 <span className="text-[11px] font-semibold tracking-widest uppercase whitespace-nowrap">
-                    Lance &middot; R$ {formatCurrency(latestBid.amount)}
+                    {isEnded ? (isWinning ? "Arrematado!" : "Encerrado") : `Lance \u00B7 R$ ${formatCurrency(latestBid.amount)}`}
                 </span>
                 <span className={`
                     flex items-center justify-center w-5 h-5 rounded-full text-[10px] font-bold transition-colors
@@ -72,7 +79,7 @@ export const BidCard: React.FC<BidCardProps> = ({ latestBid, totalActiveBids, on
                     {/* Header */}
                     <div className="px-4 py-3 border-b border-border-main bg-card-bg flex items-center justify-between">
                         <span className="text-[10px] font-bold tracking-widest uppercase text-gray-sec">
-                            Meus Lances Ativos
+                            Meus Lances {isEnded ? "" : "Ativos"}
                         </span>
                         <span className="text-[10px] font-bold text-gray-sec">
                             {totalActiveBids} leilão{totalActiveBids !== 1 ? "es" : ""}
@@ -100,7 +107,7 @@ export const BidCard: React.FC<BidCardProps> = ({ latestBid, totalActiveBids, on
                                         : <TrendingDown className="w-3.5 h-3.5 text-amber-500" />
                                     }
                                     <span className={`text-[9px] font-bold uppercase tracking-wider ${isWinning ? "text-emerald-600" : "text-amber-600"}`}>
-                                        {isWinning ? "Vencendo" : "Superado"}
+                                        {isEnded ? (isWinning ? "Venceu 🎉" : "Perdeu") : (isWinning ? "Vencendo" : "Superado")}
                                     </span>
                                 </div>
                             </div>
@@ -113,7 +120,7 @@ export const BidCard: React.FC<BidCardProps> = ({ latestBid, totalActiveBids, on
                                     </p>
                                 </div>
                                 <div className="text-right">
-                                    <p className="text-[9px] text-gray-sec uppercase tracking-wider font-semibold">Lance atual</p>
+                                    <p className="text-[9px] text-gray-sec uppercase tracking-wider font-semibold">{isEnded ? "Valor Final" : "Lance atual"}</p>
                                     <p className={`text-sm font-bold ${latestBid.currentPrice > latestBid.amount ? "text-amber-600" : "text-emerald-600"}`}>
                                         R$ {formatCurrency(latestBid.currentPrice || latestBid.amount)}
                                     </p>
@@ -122,7 +129,10 @@ export const BidCard: React.FC<BidCardProps> = ({ latestBid, totalActiveBids, on
 
                             <div className="mt-2 pt-2 border-t border-black/5 flex items-center justify-between">
                                 <span className="text-[9px] font-semibold text-gray-sec">
-                                    Encerra em: <span className="text-black-main">{formatTimeLeft(latestBid.endsAt)}</span>
+                                    {isEnded ? "Status: " : "Encerra em: "}
+                                    <span className={isEnded ? "text-red-500 font-bold" : "text-black-main"}>
+                                        {formatTimeLeft(latestBid.endsAt)}
+                                    </span>
                                 </span>
                                 <button
                                     onClick={() => {

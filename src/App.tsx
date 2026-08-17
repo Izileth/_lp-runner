@@ -10,7 +10,6 @@ import { CreateAuction } from "./pages/create-auction";
 import { AuctionDetail } from "./pages/auction-detail";
 import NotFound from "./pages/not-found";
 import type { Route } from "./types";
-import { CartProvider } from "./context/CartContext";
 import { AuthProvider } from "./context/AuthContext";
 import { BidProvider } from "./context/BidContext";
 import ErrorBoundary from "./components/organisms/ErrorBoundary";
@@ -67,7 +66,6 @@ function App() {
     return (
         <ErrorBoundary>
             <AuthProvider>
-                <CartProvider>
                     <BidProvider>
                         <div className="min-h-screen bg-ivory text-black-main relative overflow-hidden">
                             <Routes>
@@ -93,7 +91,6 @@ function App() {
                             </div>
                         </div>
                     </BidProvider>
-                </CartProvider>
             </AuthProvider>
         </ErrorBoundary>
     );
