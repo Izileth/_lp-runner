@@ -153,7 +153,10 @@ export const AuctionDetail: React.FC<AuctionDetailProps> = ({ auctionId, onNavig
 
     const minAllowed = auction && vehicle ? (auction.current_price || vehicle.starting_price) + auction.min_increment : 0;
 
-    const isEnded = auction?.status === "encerrado";
+    // Considera encerrado se o status for "encerrado" OU se o tempo atual já ultrapassou o `ends_at`
+    const isTimeExpired = auction?.ends_at ? new Date() >= new Date(auction.ends_at) : false;
+    const isEnded = auction?.status === "encerrado" || isTimeExpired;
+
     const hasBids = bids.length > 0;
     const winningBid = hasBids ? bids[0] : null;
     const isWinner = user && winningBid && winningBid.bidder_id === user.id;
@@ -359,7 +362,7 @@ export const AuctionDetail: React.FC<AuctionDetailProps> = ({ auctionId, onNavig
                                 {isEnded ? (
                                     <div className="mb-6 pb-6 border-b border-border-main">
                                         <div className="p-4 rounded-md bg-gray-100 border border-border-main text-center text-gray-sec text-[10px] font-bold uppercase tracking-widest mb-4">
-                                            Leilão {auction?.status}
+                                            Leilão Encerrado
                                         </div>
                                         
                                         {isWinner && (
