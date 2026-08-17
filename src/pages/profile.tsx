@@ -7,6 +7,7 @@ import Footer from "../components/organisms/Footer";
 import Button from "../components/atoms/Button";
 import FloatingPill from "../components/atoms/FloatingPill";
 import { User, Mail, Shield, Check, AlertCircle, Save, LogOut } from "lucide-react";
+import { ImageUpload } from "../components/molecules/ImageUpload";
 import type { Route } from "../types";
 
 interface ProfileProps {
@@ -135,7 +136,13 @@ export const Profile: React.FC<ProfileProps> = ({ onNavigate }) => {
 
             if (authError) throw authError;
 
-            // Upsert into profiles table
+            // Check if profile exists
+            const { data: existingProfile } = await supabase
+                .from("profiles")
+                .select("id")
+                .eq("id", user.id)
+                .single();
+
             const profilePayload: ProfileData = {
                 id: user.id,
                 full_name: fullName,
@@ -145,12 +152,24 @@ export const Profile: React.FC<ProfileProps> = ({ onNavigate }) => {
                 updated_at: new Date().toISOString(),
             };
 
-            const { error: profileError } = await supabase
-                .from("profiles")
-                .upsert(profilePayload);
+            let profileError;
+
+            if (existingProfile) {
+                const { error } = await supabase
+                    .from("profiles")
+                    .update(profilePayload)
+                    .eq("id", user.id);
+                profileError = error;
+            } else {
+                const { error } = await supabase
+                    .from("profiles")
+                    .insert(profilePayload);
+                profileError = error;
+            }
 
             if (profileError) {
-                console.warn("Could not upsert into 'profiles' table, updated auth metadata instead:", profileError);
+                console.warn("Could not save to 'profiles' table:", profileError);
+                throw profileError;
             }
 
             setMessage({ type: "success", text: "Perfil atualizado com sucesso!" });
@@ -276,6 +295,26 @@ export const Profile: React.FC<ProfileProps> = ({ onNavigate }) => {
 
                         {/* Form */}
                         <form ref={formRef} onSubmit={handleSubmit} className="flex flex-col gap-6">
+                            {/* Avatar Upload */}
+                            <div className="flex flex-col gap-1.5">
+                                <label className="text-[10px] font-bold uppercase tracking-wider text-gray-sec">
+                                    Imagem de Perfil
+                                </label>
+                                <ImageUpload 
+                                    maxFiles={1} 
+                                    onUploadSuccess={(urls) => {
+                                        if (urls.length > 0) {
+                                            setAvatarUrl(urls[0]);
+                                        }
+                                    }} 
+                                />
+                                {avatarUrl && (
+                                    <p className="text-[10px] text-emerald-600 font-bold mt-1">
+                                        Imagem selecionada/carregada com sucesso.
+                                    </p>
+                                )}
+                            </div>
+
                             {/* Full Name Input */}
                             <div className="flex flex-col gap-1.5">
                                 <label
@@ -351,24 +390,6 @@ export const Profile: React.FC<ProfileProps> = ({ onNavigate }) => {
                                     placeholder="(00) 00000-0000"
                                     value={phone}
                                     onChange={(e) => setPhone(e.target.value)}
-                                    className="w-full px-4 py-3 bg-ivory border border-border-main rounded-md text-sm text-black-main placeholder-gray-sec/50 outline-none focus:border-black-main transition-colors"
-                                />
-                            </div>
-
-                            {/* Avatar URL Input */}
-                            <div className="flex flex-col gap-1.5">
-                                <label
-                                    htmlFor="profile-avatar-url"
-                                    className="text-[10px] font-bold uppercase tracking-wider text-gray-sec"
-                                >
-                                    URL do Avatar
-                                </label>
-                                <input
-                                    id="profile-avatar-url"
-                                    type="url"
-                                    placeholder="https://exemplo.com/avatar.jpg"
-                                    value={avatarUrl}
-                                    onChange={(e) => setAvatarUrl(e.target.value)}
                                     className="w-full px-4 py-3 bg-ivory border border-border-main rounded-md text-sm text-black-main placeholder-gray-sec/50 outline-none focus:border-black-main transition-colors"
                                 />
                             </div>
