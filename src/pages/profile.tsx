@@ -499,7 +499,7 @@ export const Profile: React.FC<ProfileProps> = ({ onNavigate }) => {
                                         <div className="flex items-center gap-4">
                                             <button 
                                                 type="button"
-                                                onClick={() => onNavigate("create-auction")} 
+                                                onClick={() => onNavigate("edit-auction", auction.id)} 
                                                 className="text-[10px] font-bold text-black-main hover:underline uppercase"
                                             >
                                                 Editar

@@ -7,12 +7,14 @@ import Register from "./pages/register";
 import Profile from "./pages/profile";
 import { Auctions } from "./pages/auctions";
 import { CreateAuction } from "./pages/create-auction";
+import { EditAuction } from "./pages/edit-auction";
 import { AuctionDetail } from "./pages/auction-detail";
 import NotFound from "./pages/not-found";
 import type { Route } from "./types";
 import { AuthProvider } from "./context/AuthContext";
 import { BidProvider } from "./context/BidContext";
 import ErrorBoundary from "./components/organisms/ErrorBoundary";
+import { ToastContainer } from "./components/molecules/Toast";
 
 function AuctionDetailWrapper({ onNavigate }: { onNavigate: (route: Route, itemId?: string) => void }) {
     const { id } = useParams<{ id: string }>();
@@ -33,6 +35,7 @@ function App() {
             profile: "/profile",
             auctions: "/auctions",
             "create-auction": "/auctions/create",
+            "edit-auction": itemId ? `/auctions/edit/${itemId}` : "/auctions",
             "auction-detail": itemId ? `/auctions/${itemId}` : "/auctions",
             "not-found": "/404",
         };
@@ -75,9 +78,12 @@ function App() {
                                 <RouterRoute path="/profile" element={<Profile onNavigate={handleNavigate} />} />
                                 <RouterRoute path="/auctions" element={<Auctions onNavigate={handleNavigate} />} />
                                 <RouterRoute path="/auctions/create" element={<CreateAuction onNavigate={handleNavigate} />} />
+                                <RouterRoute path="/auctions/edit/:id" element={<EditAuction onNavigate={handleNavigate} />} />
                                 <RouterRoute path="/auctions/:id" element={<AuctionDetailWrapper onNavigate={handleNavigate} />} />
                                 <RouterRoute path="*" element={<NotFound onNavigate={handleNavigate} />} />
                             </Routes>
+
+                            <ToastContainer />
 
                             {/* GSAP Page Transition Curtain Overlay */}
                             <div

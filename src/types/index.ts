@@ -5,6 +5,7 @@ export type Route =
   | "profile"
   | "auctions"
   | "create-auction"
+  | "edit-auction"
   | "auction-detail"
   | "not-found";
 

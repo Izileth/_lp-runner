@@ -1,11 +1,6 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 736 920" fill="none">
-  <path d="M 157 281 L 246 413 L 488 466 L 496 469 L 491 470 L 479 468 L 306 455 L 292 446 L 191 435 L 183 433 L 301 510 L 306 511 L 493 470 L 497 471 L 365 524 L 350 523 L 272 551 L 395 560 L 500 469 L 556 497 L 538 469 L 541 463 L 524 432 L 324 358 L 311 344 Z" fill="currentColor" stroke="currentColor" stroke-width="8" stroke-linejoin="round"/>
-  <circle cx="509" cy="544" r="16.5" stroke="currentColor" stroke-width="12"/>
-  <path d="M503 539 L503 545.5 C503 549 505.7 551.5 509 551.5 C512.3 551.5 515 549 515 545.5 L515 539" stroke="currentColor" stroke-width="12" stroke-linecap="round" stroke-linejoin="round"/>
-  <style>
-    path, circle { color: #111111; }
-    @media (prefers-color-scheme: dark) {
-      path, circle { color: #FFFFFF; }
-    }
-  </style>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 900 900" fill="none">
+  <circle cx="450" cy="450" r="450" fill="#111111"/>
+  <path d="M 230 250 L 330 400 L 610 460 L 620 465 L 615 465 L 600 463 L 400 448 L 385 438 L 270 425 L 260 423 L 395 510 L 400 511 L 615 465 L 620 466 L 470 527 L 450 526 L 360 558 L 500 568 L 625 463 L 688 495 L 668 463 L 671 456 L 652 421 L 422 336 L 407 320 Z" fill="#FFFFFF"/>
+  <circle cx="635" cy="550" r="19" stroke="#FFFFFF" stroke-width="3"/>
+  <path d="M628 544 L628 551.5 C628 555 631 558 635 558 C639 558 642 555 642 551.5 L642 544" stroke="#FFFFFF" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
 </svg>

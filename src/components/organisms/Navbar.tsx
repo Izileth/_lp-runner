@@ -74,7 +74,12 @@ export const Navbar: React.FC<NavbarProps> = ({ onNavigate, currentRoute }) => {
             {/* ---------- MAIN HEADER ---------- */}
             <header className="relative z-30 flex items-center justify-between px-6 sm:px-10 lg:px-14 py-6 sm:py-8 bg-transparent">
                 {/* Logo */}
-                <Logo onClick={() => onNavigate("home")} />
+                <img 
+                    src="/favicon.svg" 
+                    alt="Logo" 
+                    onClick={() => onNavigate("home")} 
+                    className="w-10 h-10 cursor-pointer hover:opacity-80 transition-opacity" 
+                />
 
                 {/* Desktop Nav Links */}
                 <nav className="hidden md:flex items-center gap-8 text-[11px] font-semibold tracking-widest uppercase text-black-main">
@@ -113,18 +118,22 @@ export const Navbar: React.FC<NavbarProps> = ({ onNavigate, currentRoute }) => {
                         <div className="hidden sm:flex items-center gap-3">
                             <button
                                 onClick={() => onNavigate("profile")}
-                                className={`flex items-center gap-1.5 text-[11px] font-semibold tracking-widest uppercase text-black-main hover:opacity-60 transition-opacity cursor-pointer ${
+                                className={`flex items-center gap-2 text-[11px] font-semibold tracking-widest uppercase text-black-main hover:opacity-60 transition-opacity cursor-pointer ${
                                     currentRoute === "profile" ? "underline underline-offset-4 decoration-border-main" : ""
                                 }`}
                             >
-                                <User className="w-3.5 h-3.5" />
-                                {user.user_metadata?.full_name?.split(" ")[0] || "Account"}
+                                {user.user_metadata?.avatar_url ? (
+                                    <img src={user.user_metadata.avatar_url} alt="User Avatar" className="w-5 h-5 rounded-full object-cover" />
+                                ) : (
+                                    <User className="w-3.5 h-3.5" />
+                                )}
+                                {user.user_metadata?.full_name?.split(" ")[0] || "Conta"}
                             </button>
                             <button
                                 onClick={() => signOut()}
                                 className="text-gray-sec hover:text-black-main transition-colors cursor-pointer"
-                                aria-label="Sign out"
-                                title="Sign out"
+                                aria-label="Sair"
+                                title="Sair"
                             >
                                 <LogOut className="w-3.5 h-3.5" />
                             </button>
@@ -135,7 +144,7 @@ export const Navbar: React.FC<NavbarProps> = ({ onNavigate, currentRoute }) => {
                             className="hidden sm:inline-flex items-center gap-1.5 text-[11px] font-semibold tracking-widest uppercase text-black-main hover:opacity-60 transition-opacity cursor-pointer"
                         >
                             <User className="w-3.5 h-3.5" />
-                            Sign In
+                            Entrar
                         </button>
                     )}
 
