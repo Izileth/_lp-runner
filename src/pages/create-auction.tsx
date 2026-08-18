@@ -8,7 +8,7 @@ import { ImageUpload } from "../components/molecules/ImageUpload";
 import type { Route } from "../types";
 import { ArrowLeft } from "lucide-react";
 
-interface CreateAuctionProps {
+export interface CreateAuctionProps {
     onNavigate: (route: Route) => void;
 }
 

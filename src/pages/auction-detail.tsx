@@ -11,7 +11,7 @@ import { ArrowLeft, ChevronLeft, ChevronRight } from "lucide-react";
 
 import { extractIdFromSlug } from "../lib/utils";
 
-interface AuctionDetailProps {
+export interface AuctionDetailProps {
     auctionId: string;
     onNavigate: (route: Route, itemId?: string) => void;
 }

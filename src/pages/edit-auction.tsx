@@ -9,7 +9,7 @@ import type { Route } from "../types";
 import { ArrowLeft } from "lucide-react";
 import { useParams } from "react-router-dom";
 
-interface EditAuctionProps {
+export interface EditAuctionProps {
     onNavigate: (route: Route) => void;
 }
 

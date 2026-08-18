@@ -5,7 +5,7 @@ import FloatingPill from "../components/atoms/FloatingPill";
 import { ArrowLeft, SearchX } from "lucide-react";
 import type { Route } from "../types";
 
-interface NotFoundProps {
+export interface NotFoundProps {
     onNavigate: (route: Route) => void;
 }
 export const NotFound: React.FC<NotFoundProps> = ({ onNavigate }) => {

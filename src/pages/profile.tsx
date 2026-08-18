@@ -10,21 +10,12 @@ import FloatingPill from "../components/atoms/FloatingPill";
 import { User, Mail, Shield, Check, AlertCircle, Save, LogOut } from "lucide-react";
 import { ImageUpload } from "../components/molecules/ImageUpload";
 import type { Route } from "../types";
-
-interface ProfileProps {
+import type {ProfileData} from "../interfaces/index";
+export interface ProfileProps {
     onNavigate: (route: Route) => void;
 }
 
-interface ProfileData {
-    id?: string;
-    full_name: string;
-    cpf_cnpj?: string | null;
-    phone?: string | null;
-    avatar_url?: string | null;
-    role?: "bidder" | "creator" | "admin";
-    is_verified?: boolean;
-    updated_at?: string;
-}
+
 
 export const Profile: React.FC<ProfileProps> = ({ onNavigate }) => {
     const { user, signOut, loading: authLoading } = useAuth();

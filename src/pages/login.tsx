@@ -7,7 +7,7 @@ import FloatingPill from "../components/atoms/FloatingPill";
 import { Eye, EyeOff, Mail, Lock, ArrowLeft } from "lucide-react";
 import type { Route } from "../types";
 
-interface LoginProps {
+export interface LoginProps {
     onNavigate: (route: Route) => void;
 }
 

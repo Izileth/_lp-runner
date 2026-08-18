@@ -13,7 +13,6 @@ interface NavbarProps {
 
 export const Navbar: React.FC<NavbarProps> = ({ onNavigate, currentRoute }) => {
     const [isOpen, setIsOpen] = useState(false);
-   // const { bagTotal, bagItemsCount } = useCart();
     const { user, signOut } = useAuth();
     const { latestBid, totalActiveBids } = useBid();
     const sidebarRef = useRef<HTMLDivElement>(null);
@@ -121,7 +120,7 @@ export const Navbar: React.FC<NavbarProps> = ({ onNavigate, currentRoute }) => {
                                     currentRoute === "profile" ? "underline underline-offset-4 decoration-border-main" : ""
                                 }`}
                             >
-                                {user.user_metadata?.avatar_url ? (
+                                {user ? (
                                     <img src={user.user_metadata.avatar_url} alt="User Avatar" className="w-5 h-5 rounded-full object-cover" />
                                 ) : (
                                     <User className="w-3.5 h-3.5" />

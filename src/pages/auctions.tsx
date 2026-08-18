@@ -8,7 +8,7 @@ import { usePageAnimations } from "../hooks/usePageAnimations";
 import FloatingPill from "../components/atoms/FloatingPill";
 import Button from "../components/atoms/Button";
 import type { Auction, Route } from "../types";
-interface AuctionsProps {
+export interface AuctionsProps {
     onNavigate: (route: Route, auctionId?: string) => void;
 }
 

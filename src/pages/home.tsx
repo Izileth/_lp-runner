@@ -6,7 +6,7 @@ import FloatingPill from "../components/atoms/FloatingPill";
 import Button from "../components/atoms/Button";
 import { supabase } from "../lib/supabase";
 
-interface HomeProps {
+export interface HomeProps {
     onNavigate: (route: Route) => void;
 }
 
