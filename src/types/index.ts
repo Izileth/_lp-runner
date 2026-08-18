@@ -116,6 +116,23 @@ export interface Payment {
   created_at: string;
 }
 
+export interface FinSpecs {
+  material: string;
+  base: string;
+  depth: string;
+  foil: string;
+  configuration: string;
+}
+
+export interface FinProduct {
+  id: string;
+  name: string;
+  subtitle: string;
+  price: number;
+  description: string;
+  specs: FinSpecs;
+}
+
 export interface Favorite {
   id: string;
   user_id: string;

@@ -8,6 +8,7 @@ interface FinDetailsPanelProps {
     onAddToBag: () => void;
 }
 
+
 export const FinDetailsPanel: React.FC<FinDetailsPanelProps> = ({ fin, onAddToBag }) => {
     return (
         <div className="details-panel lg:col-span-8 bg-card-bg border border-border-main rounded-xl p-8 sm:p-12 flex flex-col justify-between">
