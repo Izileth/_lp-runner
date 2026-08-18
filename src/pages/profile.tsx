@@ -2,6 +2,7 @@ import React, { useState, useEffect, useRef } from "react";
 import gsap from "gsap";
 import { useAuth } from "../context/AuthContext";
 import { supabase } from "../lib/supabase";
+import { smartCache } from "../lib/cache";
 import Navbar from "../components/organisms/Navbar";
 import Footer from "../components/organisms/Footer";
 import Button from "../components/atoms/Button";
@@ -36,6 +37,49 @@ export const Profile: React.FC<ProfileProps> = ({ onNavigate }) => {
     const [role, setRole] = useState<"bidder" | "creator" | "admin">("bidder");
     const [isVerified, setIsVerified] = useState(false);
 
+    const [myAuctions, setMyAuctions] = useState<any[]>([]);
+    const [loadingAuctions, setLoadingAuctions] = useState(false);
+
+    useEffect(() => {
+        if (!user) return;
+        const fetchMyAuctions = async () => {
+            setLoadingAuctions(true);
+            try {
+                const data = await smartCache.fetch(`my_auctions_${user.id}`, async () => {
+                    const { data, error } = await supabase
+                        .from('auctions')
+                        .select(`*, vehicle:vehicles!inner(*, images:vehicle_images(*))`)
+                        .eq('vehicles.seller_id', user.id)
+                        .order('created_at', { ascending: false });
+                    
+                    if (error) throw error;
+                    return data;
+                });
+                setMyAuctions(data || []);
+            } catch (err) {
+                console.error("Error loading my auctions:", err);
+            } finally {
+                setLoadingAuctions(false);
+            }
+        };
+        fetchMyAuctions();
+    }, [user]);
+
+    const handleDeleteAuction = async (id: string) => {
+        if (confirm("Tem certeza que deseja excluir este leilão?")) {
+            try {
+                const { error } = await supabase.from('auctions').delete().eq('id', id);
+                if (error) throw error;
+                setMyAuctions(prev => prev.filter(a => a.id !== id));
+                smartCache.invalidate(`my_auctions_${user?.id}`);
+                smartCache.invalidate('auctions_');
+            } catch (err) {
+                console.error("Error deleting auction:", err);
+                alert("Erro ao excluir o leilão.");
+            }
+        }
+    };
+
     const [loading, setLoading] = useState(true);
     const [saving, setSaving] = useState(false);
     const [message, setMessage] = useState<{ type: "success" | "error"; text: string } | null>(null);
@@ -57,15 +101,19 @@ export const Profile: React.FC<ProfileProps> = ({ onNavigate }) => {
         const fetchProfile = async () => {
             try {
                 setLoading(true);
-                const { data, error } = await supabase
-                    .from("profiles")
-                    .select("*")
-                    .eq("id", user.id)
-                    .single();
+                const data = await smartCache.fetch(`profile_${user.id}`, async () => {
+                    const res = await supabase
+                        .from("profiles")
+                        .select("*")
+                        .eq("id", user.id)
+                        .single();
 
-                if (error && error.code !== "PGRST116") {
-                    console.error("Error loading profile:", error);
-                }
+                    if (res.error && res.error.code !== "PGRST116") {
+                        console.error("Error loading profile:", res.error);
+                        throw res.error;
+                    }
+                    return res.data;
+                });
 
                 if (data) {
                     if (data.full_name) setFullName(data.full_name);
@@ -427,6 +475,47 @@ export const Profile: React.FC<ProfileProps> = ({ onNavigate }) => {
                                 </button>
                             </div>
                         </form>
+                    </div>
+
+                    {/* My Auctions */}
+                    <div className="profile-card mt-12 bg-card-bg border border-border-main rounded-2xl p-8 sm:p-10 shadow-[0_8px_40px_rgba(0,0,0,0.04)]">
+                        <h2 className="text-xl font-display font-black text-black-main mb-6 uppercase tracking-tight">Meus Leilões</h2>
+                        {loadingAuctions ? (
+                            <p className="text-xs text-gray-sec">Carregando leilões...</p>
+                        ) : myAuctions.length === 0 ? (
+                            <p className="text-xs text-gray-sec">Você ainda não criou nenhum leilão.</p>
+                        ) : (
+                            <div className="flex flex-col gap-4">
+                                {myAuctions.map(auction => (
+                                    <div key={auction.id} className="flex items-center justify-between p-4 border border-border-main rounded-xl bg-ivory/50">
+                                        <div>
+                                            <p className="text-sm font-bold text-black-main">
+                                                {auction.vehicle?.brand} {auction.vehicle?.model}
+                                            </p>
+                                            <p className="text-[10px] text-gray-sec uppercase">
+                                                Status: {auction.status}
+                                            </p>
+                                        </div>
+                                        <div className="flex items-center gap-4">
+                                            <button 
+                                                type="button"
+                                                onClick={() => onNavigate("create-auction")} 
+                                                className="text-[10px] font-bold text-black-main hover:underline uppercase"
+                                            >
+                                                Editar
+                                            </button>
+                                            <button 
+                                                type="button"
+                                                onClick={() => handleDeleteAuction(auction.id)} 
+                                                className="text-[10px] font-bold text-red-600 hover:underline uppercase"
+                                            >
+                                                Excluir
+                                            </button>
+                                        </div>
+                                    </div>
+                                ))}
+                            </div>
+                        )}
                     </div>
 
                     {/* Footer branding */}

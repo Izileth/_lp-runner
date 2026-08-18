@@ -1,5 +1,6 @@
 import React, { useRef, useEffect, useState } from "react";
 import { supabase } from "../lib/supabase";
+import { smartCache } from "../lib/cache";
 import { VehicleCard } from "../components/molecules/VehicleCard";
 import { AuctionSkeletonLoader, AuctionErrorState } from "../components/molecules/AuctionLoaders";
 import PageLayout from "../components/templates/PageLayout";
@@ -25,23 +26,26 @@ export const Auctions: React.FC<AuctionsProps> = ({ onNavigate }) => {
             setLoading(true);
             setError(null);
 
-            let query = supabase
-                .from("auctions")
-                .select(`
-                    *,
-                    vehicle:vehicles(
+            const data = await smartCache.fetch(`auctions_${filter}`, async () => {
+                let query = supabase
+                    .from("auctions")
+                    .select(`
                         *,
-                        images:vehicle_images(*)
-                    )
-                `)
-                .order("created_at", { ascending: false });
+                        vehicle:vehicles(
+                            *,
+                            images:vehicle_images(*)
+                        )
+                    `)
+                    .order("created_at", { ascending: false });
 
-            if (filter !== "todos") {
-                query = query.eq("status", filter);
-            }
+                if (filter !== "todos") {
+                    query = query.eq("status", filter);
+                }
 
-            const { data, error: err } = await query;
-            if (err) throw err;
+                const { data, error: err } = await query;
+                if (err) throw err;
+                return data;
+            }, undefined, true); // forceRefresh
 
             setAuctions(data || []);
         } catch (err: unknown) {
@@ -60,23 +64,26 @@ export const Auctions: React.FC<AuctionsProps> = ({ onNavigate }) => {
                 setLoading(true);
                 setError(null);
 
-                let query = supabase
-                    .from("auctions")
-                    .select(`
-                        *,
-                        vehicle:vehicles(
+                const data = await smartCache.fetch(`auctions_${filter}`, async () => {
+                    let query = supabase
+                        .from("auctions")
+                        .select(`
                             *,
-                            images:vehicle_images(*)
-                        )
-                    `)
-                    .order("created_at", { ascending: false });
+                            vehicle:vehicles(
+                                *,
+                                images:vehicle_images(*)
+                            )
+                        `)
+                        .order("created_at", { ascending: false });
 
-                if (filter !== "todos") {
-                    query = query.eq("status", filter);
-                }
+                    if (filter !== "todos") {
+                        query = query.eq("status", filter);
+                    }
 
-                const { data, error: err } = await query;
-                if (err) throw err;
+                    const { data, error: err } = await query;
+                    if (err) throw err;
+                    return data;
+                });
 
                 if (!active) return;
                 setAuctions(data || []);
