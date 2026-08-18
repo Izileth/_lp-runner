@@ -2,6 +2,7 @@ import { useState, useEffect, useRef } from "react";
 import gsap from "gsap";
 import type { Route } from "../../types";
 import { useAuth } from "../../context/AuthContext";
+import{ useProfile} from "../../hooks/useProfile";
 import { useBid } from "../../context/BidContext";
 import BidCard from "../molecules/BidCard";
 import { User, LogOut } from "lucide-react";
@@ -13,7 +14,8 @@ interface NavbarProps {
 
 export const Navbar: React.FC<NavbarProps> = ({ onNavigate, currentRoute }) => {
     const [isOpen, setIsOpen] = useState(false);
-    const { user, signOut } = useAuth();
+    const { signOut } = useAuth();
+    const { profile } = useProfile();
     const { latestBid, totalActiveBids } = useBid();
     const sidebarRef = useRef<HTMLDivElement>(null);
     const menuBtnRef = useRef<HTMLButtonElement>(null);
@@ -112,7 +114,7 @@ export const Navbar: React.FC<NavbarProps> = ({ onNavigate, currentRoute }) => {
                 {/* Right Area: Account/Bag + Mobile Hamburger */}
                 <div className="flex items-center gap-3 sm:gap-4">
                     {/* Account Button */}
-                    {user ? (
+                    {profile ? (
                         <div className="hidden sm:flex items-center gap-3">
                             <button
                                 onClick={() => onNavigate("profile")}
@@ -120,12 +122,12 @@ export const Navbar: React.FC<NavbarProps> = ({ onNavigate, currentRoute }) => {
                                     currentRoute === "profile" ? "underline underline-offset-4 decoration-border-main" : ""
                                 }`}
                             >
-                                {user ? (
-                                    <img src={user.user_metadata.avatar_url} alt="User Avatar" className="w-5 h-5 rounded-full object-cover" />
+                                {profile ? (
+                                    <img src={profile?.avatar_url || "https://via.placeholder.com/150"} alt="User Avatar" className="w-5 h-5 rounded-full object-cover" />
                                 ) : (
                                     <User className="w-3.5 h-3.5" />
                                 )}
-                                {user.user_metadata?.full_name?.split(" ")[0] || "Conta"}
+                                {profile?.full_name?.split(" ")[0] || "Conta"}
                             </button>
                             <button
                                 onClick={() => signOut()}
@@ -147,7 +149,7 @@ export const Navbar: React.FC<NavbarProps> = ({ onNavigate, currentRoute }) => {
                     )}
 
                     {/* Active Bid Card (only shown when user has active bids) */}
-                    {user && latestBid && (
+                    {profile && latestBid && (
                         <BidCard
                             latestBid={latestBid}
                             totalActiveBids={totalActiveBids}

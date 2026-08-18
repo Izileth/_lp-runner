@@ -16,6 +16,7 @@ export type VehicleStatus =
   | "em_leilao"
   | "vendido"
   | "rejeitado";
+
 export type AuctionStatus =
   | "rascunho"
   | "agendado"
@@ -23,13 +24,15 @@ export type AuctionStatus =
   | "encerrado"
   | "cancelado";
 
+export type UserRole = "bidder" | "creator" | "admin";
+
 export interface Profile {
   id: string;
   full_name: string;
-  cpf_cnpj?: string;
-  phone?: string;
-  avatar_url?: string;
-  role: "bidder" | "admin";
+  cpf_cnpj?: string | null;
+  phone?: string | null;
+  avatar_url?: string | null;
+  role: UserRole;
   is_verified: boolean;
   created_at: string;
   updated_at: string;
@@ -41,7 +44,7 @@ export interface VehicleImage {
   url: string;
   is_cover: boolean;
   position: number;
-  created_at?: string;
+  created_at: string;
 }
 
 export interface Vehicle {
@@ -50,16 +53,16 @@ export interface Vehicle {
   brand: string;
   model: string;
   year_manufacture: number;
-  year_model?: number;
+  year_model?: number | null;
   mileage: number;
-  color?: string;
-  plate?: string;
-  vin?: string;
+  color?: string | null;
+  plate?: string | null;
+  vin?: string | null;
   condition: VehicleCondition;
-  description?: string;
-  fipe_value?: number;
+  description?: string | null;
+  fipe_value?: number | null;
   starting_price: number;
-  reserve_price?: number;
+  reserve_price?: number | null;
   status: VehicleStatus;
   created_at: string;
   updated_at: string;
@@ -67,12 +70,6 @@ export interface Vehicle {
   seller?: Profile;
 }
 
-export interface Condition {
-  usado: "usado";
-  semi_novo: "semi_novo";
-  novo: "novo";
-  colecionador: "colecionador";
-}
 export interface Auction {
   id: string;
   vehicle_id: string;
@@ -80,8 +77,8 @@ export interface Auction {
   starts_at: string;
   ends_at: string;
   min_increment: number;
-  current_price?: number;
-  winner_id?: string;
+  current_price?: number | null;
+  winner_id?: string | null;
   created_at: string;
   updated_at: string;
   vehicle?: Vehicle;
@@ -97,29 +94,42 @@ export interface Bid {
   bidder?: Profile;
 }
 
-export interface FinSpecs {
-  material: string;
-  base: string;
-  depth: string;
-  foil: string;
-  configuration: string;
+export interface Order {
+  id: string;
+  auction_id: string;
+  buyer_id: string;
+  seller_id: string;
+  amount: number;
+  status: "pendente" | "pago" | "cancelado";
+  created_at: string;
+  updated_at: string;
 }
 
-export interface FinProduct {
+export interface Payment {
   id: string;
-  name: string;
-  subtitle: string;
-  price: number;
-  description: string;
-  specs: FinSpecs;
+  order_id: string;
+  amount: number;
+  method: string;
+  status: "pendente" | "aprovado" | "recusado";
+  provider_reference?: string | null;
+  paid_at?: string | null;
+  created_at: string;
 }
 
-export interface CartItem {
+export interface Favorite {
   id: string;
-  name: string;
-  price: number;
-  quantity: number;
-  details?: string;
+  user_id: string;
+  vehicle_id: string;
+  created_at: string;
+}
+
+export interface Notification {
+  id: string;
+  user_id: string;
+  title: string;
+  message?: string | null;
+  read: boolean;
+  created_at: string;
 }
 
 // --- Generic Error Types ---

@@ -182,7 +182,7 @@ export const Profile: React.FC<ProfileProps> = ({ onNavigate }) => {
                 .eq("id", user.id)
                 .single();
 
-            const profilePayload: ProfileData = {
+            const profilePayload: ProfileData & { updated_at: string } = {
                 id: user.id,
                 full_name: fullName,
                 cpf_cnpj: cpfCnpj || null,
