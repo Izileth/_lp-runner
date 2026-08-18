@@ -1,4 +1,4 @@
-import React, { createContext, useState, useCallback } from 'react';
+import React, { createContext, useState, useCallback, useEffect } from 'react';
 import type { ReactNode } from 'react';
 import type { Profile } from '../types';
 import { supabase } from '../lib/supabase';
@@ -35,6 +35,26 @@ export const ProfileProvider: React.FC<{ children: ReactNode }> = ({ children })
       setIsLoading(false);
     }
   }, []);
+
+  // Automatically fetch or clear profile on auth state changes
+  useEffect(() => {
+    // Fetch profile if a session already exists on mount
+    supabase.auth.getSession().then(({ data: { session } }) => {
+      if (session?.user) fetchProfile();
+    });
+
+    const { data: { subscription } } = supabase.auth.onAuthStateChange((event, session) => {
+      if (event === 'SIGNED_IN' && session?.user) {
+        fetchProfile();
+      } else if (event === 'SIGNED_OUT') {
+        setProfile(null);
+        setError(null);
+      }
+    });
+
+    return () => subscription.unsubscribe();
+  }, [fetchProfile]);
+
 
   const updateProfile = useCallback(async (updates: Partial<Profile>) => {
     setIsLoading(true);
