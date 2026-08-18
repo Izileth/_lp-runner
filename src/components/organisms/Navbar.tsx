@@ -3,7 +3,6 @@ import gsap from "gsap";
 import type { Route } from "../../types";
 import { useAuth } from "../../context/AuthContext";
 import { useBid } from "../../context/BidContext";
-import Logo from "../atoms/Logo";
 import BidCard from "../molecules/BidCard";
 import { User, LogOut } from "lucide-react";
 

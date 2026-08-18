@@ -119,7 +119,7 @@ export const EditAuction: React.FC<EditAuctionProps> = ({ onNavigate }) => {
                 if (vehicleError) throw vehicleError;
 
                 if (imageUrls.length > 0) {
-                    const imagesToInsert = imageUrls.map((url, idx) => ({
+                    const imagesToInsert = imageUrls.map((url) => ({
                         vehicle_id: vehicleId,
                         url: url,
                         is_cover: false,
