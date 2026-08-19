@@ -1,6 +1,6 @@
-import  { Component } from 'react';
-import type {ErrorInfo, ReactNode} from 'react';
-import { AlertTriangle, RefreshCcw } from 'lucide-react';
+import { Component } from 'react';
+import type { ErrorInfo, ReactNode } from 'react';
+import { AlertTriangle, ArrowDown, RefreshCcw } from 'lucide-react';
 import Button from '../atoms/Button';
 import FloatingPill from '../atoms/FloatingPill';
 
@@ -36,56 +36,78 @@ export class ErrorBoundary extends Component<Props, State> {
     public render() {
         if (this.state.hasError) {
             return (
-                <div className="relative min-h-screen bg-ivory flex flex-col items-center justify-center overflow-hidden px-6 py-12">
-                    {/* Decorative floating pills */}
-                    <FloatingPill className="left-[5%] top-[20%] w-10 h-6 rotate-[-20deg] opacity-40" />
-                    <FloatingPill className="right-[8%] top-[15%] w-14 h-8 rotate-[25deg] opacity-30" />
-                    
-                    {/* Background Wordmark */}
-                    <div className="absolute inset-0 flex items-center justify-center pointer-events-none select-none opacity-[0.02] overflow-hidden -z-10">
-                        <span className="text-[25vw] font-display font-black tracking-tighter leading-none text-red-900">
-                            ERRO
-                        </span>
-                    </div>
+                <div className="relative min-h-screen bg-black-main flex flex-col overflow-hidden px-6 sm:px-10 py-8">
+                    {/* Decorative floating pills, dimmed for dark background */}
+                    <FloatingPill className="left-[6%] top-[14%] w-10 h-6 rotate-[-20deg] opacity-10" />
+                    <FloatingPill className="right-[8%] top-[10%] w-14 h-8 rotate-[25deg] opacity-10" />
+                    <FloatingPill className="right-[20%] bottom-[12%] w-8 h-5 rotate-[12deg] opacity-10" />
 
-                    {/* Error Card */}
-                    <div className="w-full max-w-md z-10 animate-fade-in-up">
-                        <div className="bg-card-bg border border-red-200 rounded-2xl p-8 sm:p-10 shadow-xl flex flex-col items-center text-center relative overflow-hidden">
-                            <div className="absolute top-0 left-0 w-full h-1 bg-red-500" />
-                            
-                            <div className="w-16 h-16 bg-red-50 rounded-full flex items-center justify-center mb-6 border border-red-100">
-                                <AlertTriangle className="w-8 h-8 text-red-500" />
-                            </div>
+                    <div className="flex flex-col flex-1 animate-fade-in-up">
+                        {/* Top bar */}
+                        <div className="flex items-center justify-between">
+                            <span className="flex items-center gap-2 text-[11px] font-bold tracking-widest uppercase text-red-400/80">
+                                <AlertTriangle className="w-4 h-4" />
+                                Falha detectada
+                            </span>
 
-                            <span className="text-[10px] font-bold tracking-[0.25em] uppercase text-red-500 mb-2">
+                            <span className="text-[10px] font-bold tracking-[0.25em] uppercase text-ivory/40">
                                 ALGO DEU ERRADO
                             </span>
-                            <h1 className="text-2xl sm:text-3xl font-display font-black tracking-tight text-black-main">
-                                Falha Inesperada
-                            </h1>
-                            <p className="text-sm text-gray-sec mt-4 leading-relaxed mb-6 max-w-xs">
-                                Desculpe, encontramos um erro inesperado ao processar sua requisição. Nossa equipe foi notificada.
-                            </p>
-                            
-                            {/* Technical Details (Collapsed by default in a real app, shown for prototyping) */}
+                        </div>
+
+                        {/* Main content */}
+                        <div className="flex-1 flex flex-col justify-center gap-10 sm:gap-14 py-16">
+                            <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-6 sm:gap-10">
+                                {/* Giant stacked headline */}
+                                <div className="leading-[0.82] -ml-1">
+                                    <div className="font-display font-black tracking-tighter text-ivory text-[22vw] sm:text-[13vw]">
+                                        ERRO
+                                    </div>
+                                    <div className="font-display font-black tracking-tighter text-ivory text-[22vw] sm:text-[13vw]">
+                                        OPS!
+                                    </div>
+                                </div>
+
+                                {/* Aside message */}
+                                <p className="font-display italic text-2xl sm:text-3xl text-ivory/80 max-w-xs pt-2 sm:pt-4">
+                                    (encontramos uma{" "}
+                                    <span className="not-italic font-black">
+                                        falha inesperada
+                                    </span>
+                                    , nossa equipe já foi notificada)
+                                </p>
+                            </div>
+
+                            {/* Technical details, styled as a dark console panel */}
                             {this.state.error && (
-                                <div className="w-full bg-red-50 p-4 rounded-lg text-left mb-6 overflow-auto max-h-32 border border-red-100">
-                                    <p className="text-xs font-mono text-red-800 font-semibold mb-1">Detalhes Técnicos:</p>
-                                    <p className="text-[10px] font-mono text-red-600 break-words">
+                                <div className="w-full max-w-lg bg-ivory/[0.04] border border-ivory/10 p-4 rounded-lg text-left overflow-auto max-h-32">
+                                    <p className="text-[10px] font-mono font-bold tracking-widest uppercase text-red-400/80 mb-1">
+                                        Detalhes técnicos
+                                    </p>
+                                    <p className="text-[11px] font-mono text-ivory/50 break-words">
                                         {this.state.error.message}
                                     </p>
                                 </div>
                             )}
 
-                            <Button
-                                onClick={this.handleReset}
-                                variant="primary"
-                                fullWidth
-                                className="!bg-black-main flex items-center justify-center gap-2"
-                            >
-                                <RefreshCcw className="w-4 h-4" />
-                                Tentar Novamente
-                            </Button>
+                            {/* Arrows pointing to the CTA */}
+                            <div className="flex items-center gap-4 sm:gap-6 pl-1">
+                                <ArrowDown className="w-6 h-6 sm:w-8 sm:h-8 text-ivory/50" />
+                                <ArrowDown className="w-6 h-6 sm:w-8 sm:h-8 text-ivory/50" />
+                                <ArrowDown className="w-6 h-6 sm:w-8 sm:h-8 text-ivory/50" />
+                            </div>
+
+                            {/* CTA */}
+                            <div>
+                                <Button
+                                    onClick={this.handleReset}
+                                    variant="secondary"
+                                    className="flex items-center justify-center gap-2"
+                                >
+                                    <RefreshCcw className="w-4 h-4" />
+                                    Tentar Novamente
+                                </Button>
+                            </div>
                         </div>
                     </div>
                 </div>
