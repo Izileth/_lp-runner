@@ -114,9 +114,9 @@ export const AuctionDetail: React.FC<AuctionDetailProps> = ({ auctionId, onNavig
 
     useEffect(() => {
         if (auction?.vehicle) {
-            document.title = `${auction.vehicle.brand} ${auction.vehicle.model} - lp-space`;
+            document.title = `${auction.vehicle.brand} ${auction.vehicle.model}`;
         } else {
-            document.title = "Leilão de Veículo - lp-space";
+            document.title = "Leilão de Veículo";
         }
     }, [auction]);
 
