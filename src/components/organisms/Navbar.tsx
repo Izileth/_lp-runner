@@ -6,6 +6,7 @@ import{ useProfile} from "../../hooks/useProfile";
 import { useBid } from "../../context/BidContext";
 import BidCard from "../molecules/BidCard";
 import { User, LogOut } from "lucide-react";
+import Logo from '../../assets/logo.svg'
 
 interface NavbarProps {
     onNavigate: (route: Route) => void;
@@ -75,7 +76,7 @@ export const Navbar: React.FC<NavbarProps> = ({ onNavigate, currentRoute }) => {
             <header className="relative z-30 flex items-center justify-between px-6 sm:px-10 lg:px-14 py-6 sm:py-8 bg-transparent">
                 {/* Logo */}
                 <img 
-                    src="/favicon.svg" 
+                    src={Logo} 
                     alt="Logo" 
                     onClick={() => onNavigate("home")} 
                     className="w-10 h-10 cursor-pointer hover:opacity-80 transition-opacity" 
