@@ -1,5 +1,5 @@
 import React from 'react';
-import { Route } from '../../types';
+import type { Route } from '../../types';
 import { ChevronRight } from 'lucide-react';
 
 export interface BreadcrumbItem {

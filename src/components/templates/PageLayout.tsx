@@ -2,7 +2,8 @@ import React from "react";
 import type { Route } from "../../types";
 import Navbar from "../organisms/Navbar";
 import Footer from "../organisms/Footer";
-import Breadcrumb, { BreadcrumbItem } from "../molecules/Breadcrumb";
+import Breadcrumb from "../molecules/Breadcrumb";
+import type { BreadcrumbItem } from "../molecules/Breadcrumb";
 
 interface PageLayoutProps {
     onNavigate: (route: Route) => void;
