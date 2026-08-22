@@ -1,4 +1,4 @@
-# Runner Landing Page & Showcase (`lp-space`)
+# Runner Landing Page & Showcase (`runner-app`)
 
 Welcome to **Runner**, an interactive e-commerce showcase and customization platform built using **React 19**, **Vite 8**, **Tailwind CSS v4**, and **GSAP**.
 
@@ -6,16 +6,16 @@ This project provides an immersive web experience for browsing premium footwear 
 
 ---
 
-## 🚀 Technologies & Architecture
+##  Technologies & Architecture
 
 This project is built using modern front-end technologies:
 
-### ⚡ Core & Build System
+###  Core & Build System
 *   **[React 19.2](https://react.dev/)**: Powered by the new **React Compiler** (enabled via Babel & Rolldown) for automated memoization.
 *   **[Vite 8.1](https://vite.dev/)**: Fast, next-generation build tool configured with `@tailwindcss/vite` and `@rolldown/plugin-babel`.
 *   **[TypeScript 6.0](https://www.typescriptlang.org/)**: Ensures type safety across all components and state management.
 
-### 🎨 Styling & Typography
+###  Styling & Typography
 *   **[Tailwind CSS v4.0](https://tailwindcss.com/)**: Leverages the new CSS-first configuration. Customized themes and typography are defined directly within the global CSS.
 *   **Theme Colors**:
     *   `ivory` (`#F5F2EC`) - Background color
@@ -27,12 +27,12 @@ This project is built using modern front-end technologies:
     *   Sans-serif: *Plus Jakarta Sans*
     *   Display: *Audiowide* (for headers and futuristic accents)
 
-### ✨ Animations & Interactions
+###  Animations & Interactions
 *   **[GSAP 3.15](https://greensock.com/gsap/) & [@gsap/react](https://greensock.com/react/)**: Used to create seamless custom page transitions (curtain slides), reveal entrance animations, and floating interactive pill elements.
 
 ---
 
-## 📂 Project Structure
+##  Project Structure
 
 The project follows a clean directory structure with atomic design components:
 
@@ -60,7 +60,7 @@ lp-space/
 
 ---
 
-## 📐 Padrões de Projeto (Design Patterns)
+##  Padrões de Projeto (Design Patterns)
 
 O projeto foi estruturado seguindo boas práticas de arquitetura e padrões de design modernos do ecossistema React:
 
@@ -84,7 +84,7 @@ Adota a abordagem moderna do Tailwind CSS v4 para definição de Design System d
 
 ---
 
-## 🛠️ Getting Started
+##  Getting Started
 
 Follow these steps to run the project locally.
 
@@ -108,7 +108,7 @@ npm install
 
 ---
 
-## ⚙️ Configuration Details
+##  Configuration Details
 
 ### React Compiler
 The new React Compiler is fully configured inside `vite.config.ts` using Babel preset compilation:
