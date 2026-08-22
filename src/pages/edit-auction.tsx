@@ -27,9 +27,9 @@ export const EditAuction: React.FC<EditAuctionProps> = ({ onNavigate }) => {
     // Form Vehicle fields
     const [brand, setBrand] = useState("");
     const [model, setModel] = useState("");
-    const [yearManufacture, setYearManufacture] = useState(new Date().getFullYear());
-    const [yearModel, setYearModel] = useState(new Date().getFullYear());
-    const [mileage, setMileage] = useState(0);
+    const [yearManufacture, setYearManufacture] = useState(String(new Date().getFullYear()));
+    const [yearModel, setYearModel] = useState(String(new Date().getFullYear()));
+    const [mileage, setMileage] = useState("0");
     const [color, setColor] = useState("");
     const [condition, setCondition] = useState<"novo" | "semi_novo" | "usado" | "colecionador">("usado");
     const [description, setDescription] = useState("");
@@ -56,9 +56,9 @@ export const EditAuction: React.FC<EditAuctionProps> = ({ onNavigate }) => {
                 setVehicleId(vehicle.id);
                 setBrand(vehicle.brand);
                 setModel(vehicle.model);
-                setYearManufacture(vehicle.year_manufacture);
-                setYearModel(vehicle.year_model);
-                setMileage(vehicle.mileage);
+                setYearManufacture(String(vehicle.year_manufacture));
+                setYearModel(String(vehicle.year_model));
+                setMileage(String(vehicle.mileage));
                 setColor(vehicle.color || "");
                 setCondition(vehicle.condition);
                 setDescription(vehicle.description || "");
@@ -212,27 +212,36 @@ export const EditAuction: React.FC<EditAuctionProps> = ({ onNavigate }) => {
                                 <div>
                                     <label className="block text-xs font-bold tracking-widest text-gray-sec uppercase mb-2">Ano Fabr.</label>
                                     <input
-                                        type="number"
+                                        type="text"
+                                        inputMode="numeric"
+                                        pattern="[0-9]*"
+                                        placeholder={String(new Date().getFullYear())}
                                         value={yearManufacture}
-                                        onChange={(e) => setYearManufacture(Number(e.target.value))}
+                                        onChange={(e) => setYearManufacture(e.target.value.replace(/\D/g, ""))}
                                         className="w-full bg-white border border-border-main rounded-xl px-4 py-3 text-black-main text-sm focus:border-black-main focus:outline-none transition-colors"
                                     />
                                 </div>
                                 <div>
                                     <label className="block text-xs font-bold tracking-widest text-gray-sec uppercase mb-2">Ano Mod.</label>
                                     <input
-                                        type="number"
+                                        type="text"
+                                        inputMode="numeric"
+                                        pattern="[0-9]*"
+                                        placeholder={String(new Date().getFullYear())}
                                         value={yearModel}
-                                        onChange={(e) => setYearModel(Number(e.target.value))}
+                                        onChange={(e) => setYearModel(e.target.value.replace(/\D/g, ""))}
                                         className="w-full bg-white border border-border-main rounded-xl px-4 py-3 text-black-main text-sm focus:border-black-main focus:outline-none transition-colors"
                                     />
                                 </div>
                                 <div>
                                     <label className="block text-xs font-bold tracking-widest text-gray-sec uppercase mb-2">KM</label>
                                     <input
-                                        type="number"
+                                        type="text"
+                                        inputMode="numeric"
+                                        pattern="[0-9]*"
+                                        placeholder="0"
                                         value={mileage}
-                                        onChange={(e) => setMileage(Number(e.target.value))}
+                                        onChange={(e) => setMileage(e.target.value.replace(/\D/g, ""))}
                                         className="w-full bg-white border border-border-main rounded-xl px-4 py-3 text-black-main text-sm focus:border-black-main focus:outline-none transition-colors"
                                     />
                                 </div>
