@@ -8,6 +8,7 @@ import Footer from "../components/organisms/Footer";
 import Button from "../components/atoms/Button";
 import FloatingPill from "../components/atoms/FloatingPill";
 import { User, Mail, Shield, Check, AlertCircle, Save, LogOut } from "lucide-react";
+import Breadcrumb from "../components/molecules/Breadcrumb";
 import { ImageUpload } from "../components/molecules/ImageUpload";
 import type { Route } from "../types";
 import type {ProfileData} from "../interfaces/index";
@@ -248,6 +249,16 @@ export const Profile: React.FC<ProfileProps> = ({ onNavigate }) => {
         <div ref={containerRef} className="min-h-screen bg-ivory flex flex-col justify-between relative overflow-hidden">
             {/* Header */}
             <Navbar onNavigate={onNavigate} currentRoute="profile" />
+
+            <div className="w-full max-w-7xl mx-auto px-6 sm:px-10 lg:px-14 pt-4 z-20">
+                <Breadcrumb 
+                    items={[
+                        { label: "Início", route: "home" },
+                        { label: "Minha Conta" }
+                    ]} 
+                    onNavigate={onNavigate} 
+                />
+            </div>
 
             {/* Decorative Floating Pills */}
             <FloatingPill className="left-[5%] top-[18%] w-12 h-7 rotate-[-15deg] opacity-35" />

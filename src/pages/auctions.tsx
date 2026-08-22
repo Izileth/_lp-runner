@@ -106,7 +106,15 @@ export const Auctions: React.FC<AuctionsProps> = ({ onNavigate }) => {
     }, [filter]);
 
     return (
-        <PageLayout onNavigate={onNavigate} currentRoute="auctions" showFooterLinks={true}>
+        <PageLayout 
+            onNavigate={onNavigate} 
+            currentRoute="auctions" 
+            showFooterLinks={true}
+            breadcrumbItems={[
+                { label: "Início", route: "home" },
+                { label: "Leilões" }
+            ]}
+        >
             <div ref={pageRef} className="relative flex-1 flex flex-col items-center w-full">
                 {/* Decorative floating pills */}
                 <FloatingPill className="left-[5%] top-[10%] w-12 h-7 rotate-[-15deg] floating-pill" />

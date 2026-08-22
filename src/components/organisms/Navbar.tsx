@@ -101,15 +101,19 @@ export const Navbar: React.FC<NavbarProps> = ({ onNavigate, currentRoute }) => {
                     >
                         Leilões
                     </button>
-                    <span className="text-border-main">/</span>
-                    <button
-                        onClick={() => onNavigate("create-auction")}
-                        className={`hover:opacity-60 transition-opacity cursor-pointer ${
-                            currentRoute === "create-auction" ? "underline underline-offset-4 decoration-border-main" : ""
-                        }`}
-                    >
-                        Criar Leilão
-                    </button>
+                    {profile && (
+                        <>
+                            <span className="text-border-main">/</span>
+                            <button
+                                onClick={() => onNavigate("create-auction")}
+                                className={`hover:opacity-60 transition-opacity cursor-pointer ${
+                                    currentRoute === "create-auction" ? "underline underline-offset-4 decoration-border-main" : ""
+                                }`}
+                            >
+                                Criar Leilão
+                            </button>
+                        </>
+                    )}
                 </nav>
 
                 {/* Right Area: Account/Bag + Mobile Hamburger */}
@@ -204,12 +208,14 @@ export const Navbar: React.FC<NavbarProps> = ({ onNavigate, currentRoute }) => {
                     >
                         Leilões
                     </button>
-                    <button
-                        onClick={() => handleMobileLinkClick("create-auction")}
-                        className="mobile-nav-link text-left text-4xl sm:text-5xl font-bold tracking-tighter uppercase font-display cursor-pointer hover:text-gray-sec transition-colors"
-                    >
-                        Criar Leilão
-                    </button>
+                    {profile && (
+                        <button
+                            onClick={() => handleMobileLinkClick("create-auction")}
+                            className="mobile-nav-link text-left text-4xl sm:text-5xl font-bold tracking-tighter uppercase font-display cursor-pointer hover:text-gray-sec transition-colors"
+                        >
+                            Criar Leilão
+                        </button>
+                    )}
                     <button
                         onClick={() => handleMobileLinkClick("profile")}
                         className="mobile-nav-link text-left text-4xl sm:text-5xl font-bold tracking-tighter uppercase font-display cursor-pointer hover:text-gray-sec transition-colors"

@@ -118,7 +118,15 @@ export const CreateAuction: React.FC<CreateAuctionProps> = ({ onNavigate }) => {
     };
 
     return (
-        <PageLayout onNavigate={onNavigate} currentRoute="create-auction">
+        <PageLayout 
+            onNavigate={onNavigate} 
+            currentRoute="create-auction"
+            breadcrumbItems={[
+                { label: "Início", route: "home" },
+                { label: "Leilões", route: "auctions" },
+                { label: "Criar Leilão" }
+            ]}
+        >
             <div ref={pageRef} className="relative flex-1 flex flex-col items-center w-full px-6 py-12">
                 <div className="w-full max-w-4xl showcase-card anim-stagger bg-card-bg border border-border-main rounded-2xl p-8 sm:p-12 overflow-hidden shadow-xl transition-all duration-500 hover:border-black-main">
                     <div className="absolute top-0 right-0 w-64 h-64 bg-radial from-black-main/5 to-transparent rounded-full blur-2xl pointer-events-none transition-all duration-700"></div>

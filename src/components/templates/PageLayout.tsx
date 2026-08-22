@@ -2,11 +2,13 @@ import React from "react";
 import type { Route } from "../../types";
 import Navbar from "../organisms/Navbar";
 import Footer from "../organisms/Footer";
+import Breadcrumb, { BreadcrumbItem } from "../molecules/Breadcrumb";
 
 interface PageLayoutProps {
     onNavigate: (route: Route) => void;
     currentRoute: Route;
     showFooterLinks?: boolean;
+    breadcrumbItems?: BreadcrumbItem[];
     children: React.ReactNode;
 }
 
@@ -14,6 +16,7 @@ export const PageLayout: React.FC<PageLayoutProps> = ({
     onNavigate,
     currentRoute,
     showFooterLinks = true,
+    breadcrumbItems,
     children,
 }) => {
     return (
@@ -21,6 +24,13 @@ export const PageLayout: React.FC<PageLayoutProps> = ({
             <div>
                 {/* Navbar */}
                 <Navbar onNavigate={onNavigate} currentRoute={currentRoute} />
+
+                {/* Breadcrumb (Optional) */}
+                {breadcrumbItems && breadcrumbItems.length > 0 && (
+                    <div className="w-full max-w-7xl mx-auto px-6 sm:px-10 lg:px-14 pt-4">
+                        <Breadcrumb items={breadcrumbItems} onNavigate={onNavigate} />
+                    </div>
+                )}
 
                 {/* Main Content */}
                 {children}

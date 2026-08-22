@@ -212,7 +212,15 @@ export const AuctionDetail: React.FC<AuctionDetailProps> = ({ auctionId, onNavig
 
     if (loading) {
         return (
-            <PageLayout onNavigate={onNavigate} currentRoute="auction-detail">
+            <PageLayout 
+            onNavigate={onNavigate} 
+            currentRoute="auction-detail"
+            breadcrumbItems={[
+                { label: "Início", route: "home" },
+                { label: "Leilões", route: "auctions" },
+                { label: auction?.vehicle ? `${auction.vehicle.brand} ${auction.vehicle.model}` : "Detalhes do Leilão" }
+            ]}
+        >
                 <AuctionDetailSkeletonLoader />
             </PageLayout>
         );
@@ -220,7 +228,15 @@ export const AuctionDetail: React.FC<AuctionDetailProps> = ({ auctionId, onNavig
 
     if (fetchError || !auction) {
         return (
-            <PageLayout onNavigate={onNavigate} currentRoute="auction-detail">
+            <PageLayout 
+            onNavigate={onNavigate} 
+            currentRoute="auction-detail"
+            breadcrumbItems={[
+                { label: "Início", route: "home" },
+                { label: "Leilões", route: "auctions" },
+                { label: auction?.vehicle ? `${auction.vehicle.brand} ${auction.vehicle.model}` : "Detalhes do Leilão" }
+            ]}
+        >
                 <AuctionErrorState
                     message={fetchError || "Leilão não encontrado."}
                     onRetry={() => fetchAuctionData(true)}
@@ -231,7 +247,15 @@ export const AuctionDetail: React.FC<AuctionDetailProps> = ({ auctionId, onNavig
     }
 
     return (
-        <PageLayout onNavigate={onNavigate} currentRoute="auction-detail">
+        <PageLayout 
+            onNavigate={onNavigate} 
+            currentRoute="auction-detail"
+            breadcrumbItems={[
+                { label: "Início", route: "home" },
+                { label: "Leilões", route: "auctions" },
+                { label: auction?.vehicle ? `${auction.vehicle.brand} ${auction.vehicle.model}` : "Detalhes do Leilão" }
+            ]}
+        >
             <section ref={pageRef} className="relative w-full overflow-hidden">
                 {/* ---------- WORDMARK + PRODUCT IMAGE GALLERY ---------- */}
                 <div className="relative flex items-center justify-center px-4 min-h-[280px] sm:min-h-[380px] lg:min-h-[460px]">
